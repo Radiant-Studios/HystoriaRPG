@@ -1,0 +1,11 @@
+.appLayout {
+  display: flex;
+  flex-direction: column;
+  /* Agora usamos 'height: 100%' porque o pai (#root) já tem 100% */
+  height: 100%;
+}
+
+.pageContent {
+  /* Faz o conteúdo principal se esticar e ocupar o espaço vago */
+  flex: 1;
+}

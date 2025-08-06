@@ -1,0 +1,27 @@
+/* Adicione este bloco no topo do seu arquivo */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #1d1f20; /* Um azul-escuro, cor principal do header */
+  --border-color: #5b5e61; /* Uma borda um pouco mais clara que o fundo */
+  --text-primary: #e0e0e0;   /* Texto principal (branco) */
+  --text-secondary: #8f949c; /* Texto secundário (cinza claro para links) */
+  --accent-primary: #7c3aed;  /* Cor de destaque (azul) para hovers e bordas */
+}
+
+/* O resto do seu CSS global pode vir aqui */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+}

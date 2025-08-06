@@ -1,0 +1,105 @@
+.carouselContainer {
+  max-width: 1200px;
+  margin: 40px auto;
+  box-shadow: 0 10px 25px rgba(44, 62, 80, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.slide {
+  position: relative;
+  height: 500px;
+  background-color: #2c3e50;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.65);
+}
+
+/* =========================================================================
+   A CORREÇÃO ESTÁ AQUI
+   ========================================================================= */
+.legend {
+  position: absolute !important;
+  /* 1. AUMENTAMOS A DISTÂNCIA DA BASE:
+     Subimos a legenda para dar mais espaço embaixo. */
+  bottom: 60px !important; 
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 80% !important;
+  max-width: 900px; /* Adiciona uma largura máxima para a legenda */
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  /* 2. AJUSTAMOS O PADDING:
+     Um pouco menos de preenchimento vertical para a caixa não ficar tão alta. */
+  padding: 20px !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  text-align: center;
+  transition: background-color 0.3s;
+  /* 3. GARANTE O CÁLCULO CORRETO DO TAMANHO:
+     Isso garante que o padding seja incluído dentro da altura/largura da caixa. */
+  box-sizing: border-box;
+}
+
+.legend:hover {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+.legend h2 {
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+
+.legend p {
+  margin: 0;
+  font-size: 1.1rem; /* Diminuí um pouco a fonte para garantir que caiba */
+}
+
+
+/* ... O restante do seu CSS para as setas e bolinhas continua o mesmo ... */
+
+:global(.carousel .control-arrow) {
+  background: var(--accent-primary) !important;
+  opacity: 0.8 !important;
+  transition: opacity 0.3s !important;
+  width: 50px !important;
+  height: 50px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  border-radius: 50% !important;
+}
+
+:global(.carousel .control-arrow:hover) {
+  opacity: 1 !important;
+}
+
+:global(.carousel .control-prev.control-arrow) {
+  left: 15px !important;
+}
+
+:global(.carousel .control-next.control-arrow) {
+  right: 15px !important;
+}
+
+:global(.carousel .control-dots .dot) {
+  background: var(--text-secondary) !important;
+  box-shadow: none !important;
+  opacity: 0.7 !important;
+  width: 12px !important;
+  height: 12px !important;
+  transition: opacity 0.3s, background-color 0.3s !important;
+}
+
+:global(.carousel .control-dots .dot.selected) {
+  background: var(--accent-primary) !important;
+  opacity: 1 !important;
+}
+
+:global(.carousel .control-dots .dot:hover) {
+    background: var(--text-primary) !important;
+}
