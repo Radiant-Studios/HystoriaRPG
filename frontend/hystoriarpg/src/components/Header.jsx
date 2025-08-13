@@ -32,7 +32,7 @@ function Header() {
         {/* Adicionei uma div 'menu' para alinhar com a estrutura do seu CSS original */}
         <div className={styles.menu}>
           <nav className={styles.mainNav}>
-            <NavLink to="/ficha/nova">Criar Ficha</NavLink>
+            <NavLink to="/fichas/nova">Criar Ficha</NavLink>
             <NavLink to="/fichas">Minhas Fichas</NavLink>
             <NavLink to="/campanhas">Campanhas</NavLink>
             <NavLink to="/embreve">Em breve...</NavLink>
@@ -47,10 +47,11 @@ function Header() {
               onClick={handleLogout}
               className={styles.profileButton}
               style={{ backgroundImage: `url(${user.foto_perfil_url || '/images/default-avatar.jpg'})` }}
-              title="Sair" // Tooltip para acessibilidade
+              title="Sair"
             ></button>
           ) : (
-            <Link to="/login" className="alguma-classe-para-login-button">Entrar</Link>
+            // A MUDANÇA ESTÁ AQUI: aplicamos a nossa nova classe de estilo
+            <Link to="/login" className={styles.loginButton}>Entrar</Link>
           )}
         </div>
       </div>

@@ -9,18 +9,33 @@ const initialState = {
   error: null,
 };
 
+export const checkAuthStatus = createAsyncThunk(
+  'auth/checkAuthStatus',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get('http://localhost:5000/api/usuario/atual', {
+        withCredentials: true,
+      });
+      return data; // Retorna os dados do utilizador se a sessão for válida
+    } catch (err) {
+      
+      return rejectWithValue(err.response.data.erro);
+    }
+  }
+);
+
 // Ação assíncrona para fazer o login do usuário
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (loginData, { rejectWithValue }) => {
     try {
       // Chama a API de login
-      await axios.post('http://localhost:3000/auth/login', loginData, {
+      await axios.post('http://localhost:5000/auth/login', loginData, {
         withCredentials: true,
       });
       
       // Se o login deu certo, busca os dados do usuário
-      const { data: userData } = await axios.get('http://localhost:3000/api/usuario/atual', {
+      const { data: userData } = await axios.get('http://localhost:5000/api/usuario/atual', {
         withCredentials: true,
       });
 
@@ -40,7 +55,7 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       // Chama a API de registro
-      const response = await axios.post('http://localhost:3000/auth/registrar', userData);
+      const response = await axios.post('http://localhost:5000/auth/registrar', userData);
       // Retorna a mensagem de sucesso
       return response.data.mensagem; 
     } catch (err) {
@@ -96,8 +111,22 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload; // Salva a mensagem de erro
+      })
+      .addCase(checkAuthStatus.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(checkAuthStatus.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.isAuthenticated = true;
+        state.user = action.payload;
+      })
+      .addCase(checkAuthStatus.rejected, (state) => {
+        state.status = 'failed';
+        state.isAuthenticated = false;
+        state.user = null;
+        state.error = 'Usuário não autenticado'; // Mensagem padrão se a autenticação falhar
       });
-  },
+    },
 });
 
 // Exporta a ação de logout e o reducer principal

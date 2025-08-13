@@ -1,6 +1,3 @@
-// Arquivo: server.js
-
-// --- Importações ---
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
@@ -9,11 +6,11 @@ const cors = require('cors');
 const multer = require('multer');
 
 // --- Importa as rotas e o middleware de autenticação ---
-const autenticarUsuario = require('./middleware/autenticacao');
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const campanhaRoutes = require('./routes/campanhaRoutes');
-const fichaRoutes = require('./routes/fichaRoutes');
+const autenticarUsuario = require('./src/middleware/autenticacao');
+const authRoutes = require('./src/routes/authRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const campanhaRoutes = require('./src/routes/campanhasRoutes');
+const fichaRoutes = require('./src/routes/fichaRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 
 // Permite a comunicação com o frontend em React
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:3000',
   credentials: true
 }));
 

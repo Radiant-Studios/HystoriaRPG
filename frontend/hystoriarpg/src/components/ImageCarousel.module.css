@@ -1,105 +1,197 @@
-.carouselContainer {
-  max-width: 1200px;
-  margin: 40px auto;
-  box-shadow: 0 10px 25px rgba(44, 62, 80, 0.2);
-  border-radius: 12px;
-  overflow: hidden;
+/* Wrapper que contém todo o carrossel */
+.carouselWrapper {
+  width: 130%;
+  max-width: 1400px;
+  margin: 0 auto;
   position: relative;
+  padding: 40px 0;
+  overflow: visible;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
+.flipster {
+  margin: 0 -25px;
+  padding: 40px;
+}
+
+/* Container de cada slide */
 .slide {
   position: relative;
-  height: 500px;
-  background-color: #2c3e50;
+  height: 600px;
+  border-radius: 25px;
+  overflow: hidden;
+  transition: all 0.4s ease;
 }
 
+/* O conteúdo dentro de cada slide */
+.slideContent {
+  position: relative;
+  height: 600px;
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+/* A imagem dentro do slide */
 .slide img {
-  width: 100%;
+  width: 100%; /* Alterado de 120% para 100% */
   height: 100%;
-  object-fit: cover;
-  filter: brightness(0.65);
+  object-fit: cover; /* Cobre o espaço sem distorcer */
+  border-radius: 25px;
+  padding: 0;
 }
 
-/* =========================================================================
-   A CORREÇÃO ESTÁ AQUI
-   ========================================================================= */
+/* A legenda com o texto */
 .legend {
-  position: absolute !important;
-  /* 1. AUMENTAMOS A DISTÂNCIA DA BASE:
-     Subimos a legenda para dar mais espaço embaixo. */
-  bottom: 60px !important; 
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: 80% !important;
-  max-width: 900px; /* Adiciona uma largura máxima para a legenda */
-  background-color: rgba(0, 0, 0, 0.6) !important;
-  color: white !important;
-  /* 2. AJUSTAMOS O PADDING:
-     Um pouco menos de preenchimento vertical para a caixa não ficar tão alta. */
-  padding: 20px !important;
-  border-radius: 8px !important;
-  opacity: 1 !important;
-  text-align: center;
-  transition: background-color 0.3s;
-  /* 3. GARANTE O CÁLCULO CORRETO DO TAMANHO:
-     Isso garante que o padding seja incluído dentro da altura/largura da caixa. */
-  box-sizing: border-box;
-}
-
-.legend:hover {
-  background-color: rgba(0, 0, 0, 0.75) !important;
+  /* Removido background e border anteriores */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 100px 40px 40px 40px;
+  width: 100%;
+  max-width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+  transform: none;
+  border-radius: 0 0 15px 15px;
+  backdrop-filter: blur(2px);
 }
 
 .legend h2 {
-  margin: 0 0 10px 0;
-  font-size: 2rem;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  transform: translateY(0);
+  color: white;
+  opacity: 1;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .legend p {
-  margin: 0;
-  font-size: 1.1rem; /* Diminuí um pouco a fonte para garantir que caiba */
+  font-size: 18px;
+  line-height: 1.6;
+  color: white;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
-
-
-/* ... O restante do seu CSS para as setas e bolinhas continua o mesmo ... */
 
 :global(.carousel .control-arrow) {
-  background: var(--accent-primary) !important;
-  opacity: 0.8 !important;
+  z-index: 2; /* Garante que as setas fiquem por cima da legenda */
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px) !important;
+  opacity: 0.7 !important;
   transition: opacity 0.3s !important;
-  width: 50px !important;
-  height: 50px !important;
+  width: 60px !important;
+  height: 60px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 50% !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+}
+:global(.carousel .control-arrow:hover){
+    opacity: 1 !important;
+}
+:global(.carousel .control-prev.control-arrow){
+    left: 20px !important;
+}
+:global(.carousel .control-next.control-arrow){
+    right: 20px !important;
 }
 
-:global(.carousel .control-arrow:hover) {
-  opacity: 1 !important;
-}
-
-:global(.carousel .control-prev.control-arrow) {
-  left: 15px !important;
-}
-
-:global(.carousel .control-next.control-arrow) {
-  right: 15px !important;
+:global(.carousel .control-dots) {
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 15px 0 !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
 }
 
 :global(.carousel .control-dots .dot) {
-  background: var(--text-secondary) !important;
-  box-shadow: none !important;
-  opacity: 0.7 !important;
-  width: 12px !important;
-  height: 12px !important;
-  transition: opacity 0.3s, background-color 0.3s !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    opacity: 0.7 !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+    margin: 0 6px !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none;
 }
 
 :global(.carousel .control-dots .dot.selected) {
-  background: var(--accent-primary) !important;
-  opacity: 1 !important;
+    background: var(--accent-primary) !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 15px var(--accent-primary) !important;
 }
 
-:global(.carousel .control-dots .dot:hover) {
-    background: var(--text-primary) !important;
+/* Ajustes para o efeito 3D e destaque */
+:global(.carousel-slider) {
+    overflow: hidden !important;
+    margin: 0;
+    padding-bottom: 50px !important;
+    background: none;
+}
+
+:global(.slide.selected) {
+    transform: scale(1.05) translateZ(0) !important;
+    z-index: 10 !important;
+    transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+    filter: none;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+:global(.slide:not(.selected)) {
+    transform: scale(0.85) translateZ(-30px) rotateY(-5deg) !important;
+    filter: brightness(0.6) blur(0.5px);
+    opacity: 0.8 !important;
+    transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+:global(.carousel .slider-wrapper) {
+    perspective: 800px;
+    transform-style: preserve-3d;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+
+:global(.control-arrow) {
+    z-index: 20 !important;
+}
+
+:global(.flipster--coverflow .flipster__item--past, 
+.flipster--coverflow .flipster__item--future) {
+  opacity: 0.6;
+  transition: all 600ms ease;
+  transform-origin: center center;
+}
+
+:global(.flipster--coverflow .flipster__item--past) {
+  transform: translateX(-120px) rotateY(25deg) scale(0.85);
+}
+
+:global(.flipster--coverflow .flipster__item--future) {
+  transform: translateX(120px) rotateY(-25deg) scale(0.85);
+}
+
+:global(.flipster__item--current) {
+  transition: all 600ms ease;
+  transform: rotateY(0deg) !important;
+  filter: brightness(1.2) contrast(1.1);
+}
+
+:global(.flipster__button) {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  width: 60px;
+  height: 60px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+:global(.flipster__container) {
+  padding: 0 60px;
+  margin: 0 -60px;
 }

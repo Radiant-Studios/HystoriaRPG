@@ -1,126 +1,160 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+// Importar o NOVO ficheiro CSS
+import styles from './NovaFicha.module.css';
+
+// Importar os seus dados
+import { RACAS } from '../Data/racasData';
+import { CLASSES } from '../Data/classesData';
+import { ORIGENS } from '../Data/origensData';
+
+// NOTA IMPORTANTE: Crie um objeto como este para mapear os nomes das suas
+// classes e raças para os caminhos das imagens que você irá usar.
+const IMAGE_MAP = {
+    // Classes
+    Guerreiro: '/images/classes/guerreiro.jpg',
+    Ladino: '/images/classes/ladino.jpg',
+    Arcanista: '/images/classes/arcanista.jpg',
+    // Raças
+    Humano: '/images/racas/humano.jpg',
+    Anão: '/images/racas/anao.jpg',
+    Elfo: '/images/racas/elfo.jpg',
+    // Imagem padrão caso não encontre uma específica
+    default: '/images/default-card.jpg'
+};
+
 
 function NovaFichaPage() {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    nomePersonagem: '',
-    historia: '',
-    raca: '',
-    classe: '',
-    origem: '',
-  });
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
-  // Função para atualizar o estado quando o usuário digita em qualquer campo
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+    const [currentStep, setCurrentStep] = useState(1);
+    const [activeCard, setActiveCard] = useState(null);
+    const [selections, setSelections] = useState({
+        raca: '',
+        classe: '',
+        origem: '',
+    });
+    const [formData, setFormData] = useState({
+        nomePersonagem: '',
+        historia: '',
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+    const handleCardToggle = (id) => {
+        setActiveCard(activeCard === id ? null : id);
+    };
 
-    try {
-      // Chama a sua API de criação de ficha
-      const response = await axios.post('http://localhost:3000/api/fichas', formData, {
-        withCredentials: true,
-      });
+    const handleSelect = (type, value) => {
+        setSelections(prev => ({ ...prev, [type]: value }));
+        setCurrentStep(prev => prev + 1);
+        setActiveCard(null); // Reseta o card ativo ao avançar
+    };
 
-      // Se a criação for bem-sucedida, a API retorna a ficha criada
-      const novaFicha = response.data;
-      
-      // Redireciona o usuário para a página de detalhes da ficha recém-criada
-      navigate(`/ficha/${novaFicha.id}`);
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({ ...prevState, [name]: value }));
+    };
 
-    } catch (err) {
-      if (err.response && err.response.data) {
-        setError(err.response.data.erro);
-      } else {
-        setError('Ocorreu um erro ao criar a ficha. Tente novamente.');
-      }
-      setIsLoading(false);
-    }
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+        const finalFichaData = { ...formData, ...selections };
+        try {
+            const response = await axios.post('http://localhost:5000/api/fichas', finalFichaData, {
+                withCredentials: true,
+            });
+            navigate(`/fichas/${response.data.id}`);
+        } catch (err) {
+            setError(err.response?.data?.erro || 'Ocorreu um erro ao criar a ficha.');
+            setIsLoading(false);
+        }
+    };
 
-  return (
-    <div className="container">
-      <h1>Criar Nova Ficha de Personagem</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="nomePersonagem">Nome do Personagem</label>
-          <input
-            type="text"
-            id="nomePersonagem"
-            name="nomePersonagem"
-            value={formData.nomePersonagem}
-            onChange={handleChange}
-            required
-          />
+    // Componente de passo de seleção, agora renderiza uma grid de cards
+    const SelectionStep = ({ title, data, type, selectedValue }) => (
+        <>
+            <h1>{title}</h1>
+            <div className={styles.selectionSummary}>{selectedValue || 'Faça a sua escolha'}</div>
+            <div className={styles.selectionGrid}>
+                {data.map((item) => (
+                    <div
+                        key={item.nome}
+                        className={`${styles.card} ${activeCard === item.nome ? styles.active : ''}`}
+                        onClick={() => handleCardToggle(item.nome)}
+                    >
+                        <div
+                            className={styles.cardImage}
+                            style={{ backgroundImage: `url(${IMAGE_MAP[item.nome] || IMAGE_MAP.default})` }}
+                        ></div>
+                        <h3 className={styles.cardTitle}>{item.nome}</h3>
+                        <div className={styles.cardContent}>
+                            <ul>
+                                {item.habilidades.map((hab, index) => (
+                                    <li key={index} dangerouslySetInnerHTML={{ __html: hab }}></li>
+                                ))}
+                            </ul>
+                            <button className={styles.btn} onClick={(e) => {
+                                e.stopPropagation(); // Impede que o clique no botão feche o card
+                                handleSelect(type, item.nome);
+                            }}>
+                                Selecionar {item.nome}
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+
+    return (
+        <div className={styles.novaFichaContainer}>
+            {/* Steps para Raça, Classe e Origem */}
+            <div className={`${styles.step} ${currentStep === 1 ? styles.active : ''}`}>
+                <SelectionStep title="Escolha sua Raça" data={RACAS} type="raca" selectedValue={selections.raca} />
+            </div>
+            <div className={`${styles.step} ${currentStep === 2 ? styles.active : ''}`}>
+                <SelectionStep title="Escolha sua Classe" data={CLASSES} type="classe" selectedValue={selections.classe} />
+            </div>
+            <div className={`${styles.step} ${currentStep === 3 ? styles.active : ''}`}>
+                <SelectionStep title="Escolha sua Origem" data={ORIGENS} type="origem" selectedValue={selections.origem} />
+            </div>
+
+            {/* Step Final do Formulário */}
+            <div className={`${styles.step} ${currentStep === 4 ? styles.active : ''}`}>
+                <h1>Identidade do Personagem</h1>
+                <div className={styles.selectionSummary}>
+                    {`${selections.raca} / ${selections.classe} / ${selections.origem}`}
+                </div>
+                <form id={styles.identidadeForm} onSubmit={handleSubmit}>
+                    <div className={styles.inputbox}>
+                        <input
+                            type="text"
+                            name="nomePersonagem"
+                            placeholder="Nome do Personagem"
+                            value={formData.nomePersonagem}
+                            onChange={handleFormChange}
+                            required
+                        />
+                    </div>
+                    <div className={styles.inputbox}>
+                        <textarea
+                            name="historia"
+                            placeholder="Escreva a história do seu personagem..."
+                            value={formData.historia}
+                            onChange={handleFormChange}
+                        ></textarea>
+                    </div>
+                    {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '15px' }}>{error}</p>}
+                    <button type="submit" className={styles.btn} disabled={isLoading}>
+                        {isLoading ? 'A criar...' : 'Finalizar e Criar Ficha'}
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="raca">Raça</label>
-          <input
-            type="text"
-            id="raca"
-            name="raca"
-            value={formData.raca}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="classe">Classe</label>
-          <input
-            type="text"
-            id="classe"
-            name="classe"
-            value={formData.classe}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="origem">Origem</label>
-          <input
-            type="text"
-            id="origem"
-            name="origem"
-            value={formData.origem}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="historia">História</label>
-          <textarea
-            id="historia"
-            name="historia"
-            value={formData.historia}
-            onChange={handleChange}
-            rows="5"
-          ></textarea>
-        </div>
-
-        {error && <p className="error-message">{error}</p>}
-
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Criando...' : 'Criar Ficha'}
-        </button>
-      </form>
-    </div>
-  );
+    );
 }
 
 export default NovaFichaPage;

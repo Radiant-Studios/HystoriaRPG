@@ -1,76 +1,89 @@
-// Arquivo: frontend/src/pages/FichasPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Para criar links de navegação
+import { Link } from 'react-router-dom';
+import styles from './FichasPage.module.css'; // Importa o nosso novo estilo
+import { FaTrash } from 'react-icons/fa'; // Ícone de lixo
+import LoadingSpinner from '../components/LoadingSpinner'; // Importa o componente de loading
 
 function FichasPage() {
   const [fichas, setFichas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect é o hook que executa uma função quando o componente "monta" na tela.
-  // Perfeito para buscar dados iniciais.
   useEffect(() => {
     const fetchFichas = async () => {
       try {
-        // Chama a nova API que criamos no backend
-        const response = await axios.get('http://localhost:3000/api/fichas', {
-          withCredentials: true // MUITO IMPORTANTE: envia os cookies para autenticação
+        const response = await axios.get('http://localhost:5000/api/fichas', {
+          withCredentials: true,
         });
-        setFichas(response.data); // Guarda a lista de fichas no estado do componente
+        setFichas(response.data);
       } catch (err) {
-        // Se a chamada falhar (ex: usuário não logado), guardamos o erro
         setError('Falha ao carregar as fichas. Por favor, tente fazer o login novamente.');
-        console.error(err);
       } finally {
-        // Independentemente do resultado, paramos de mostrar a mensagem de "carregando"
         setLoading(false);
       }
     };
-
     fetchFichas();
-  }, []); // O array vazio [] significa: "execute esta função apenas uma vez"
+  }, []);
 
-  // Se estiver carregando, mostre uma mensagem
-  if (loading) {
-    return <div>Carregando suas fichas...</div>;
-  }
+  const handleDelete = async (fichaId) => {
+    if (!window.confirm('Tem a certeza de que deseja apagar esta ficha? Esta ação é irreversível.')) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/fichas/${fichaId}`, { withCredentials: true });
+      setFichas(fichas.filter(f => f.id !== fichaId));
+    } catch (err) {
+      alert('Erro ao apagar a ficha.');
+    }
+  };
 
-  // Se deu erro, mostre o erro
-  if (error) {
-    return <div style={{ color: 'red' }}>{error}</div>;
-  }
+  if (loading) return <LoadingSpinner />; // <-- USA O SPINNER EM VEZ DO TEXTO
+  
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
-    <div className="container">
-      <h1>Minhas Fichas</h1>
-      <Link to="/fichas/nova" className="button-new-char">
-        + Criar Nova Ficha
+    <main className={styles.main}>
+      <Link to="/fichas/nova" className={styles.btnNovaFicha}>
+        Criar Nova Ficha
       </Link>
       
-      <div className="fichas-list">
-        {fichas.length > 0 ? (
-          fichas.map(ficha => (
-            // O "key" é uma propriedade especial que o React usa para otimizar listas
-            <div key={ficha.id} className="ficha-card">
-              <Link to={`/ficha/${ficha.id}`}>
-                <img 
-                  src={ficha.foto_personagem || '/images/default-avatar.jpg'} 
-                  alt={`Foto de ${ficha.nome}`} 
-                />
-                <div className="ficha-card-info">
-                  <h2>{ficha.nome}</h2>
-                  <p>{ficha.raca} - Nível {ficha.nivel}</p>
+      {fichas.length > 0 ? (
+        <ul className={styles.fichasList}>
+          {fichas.map(ficha => (
+            <li key={ficha.id} className={styles.fichaItem}>
+              <Link to={`/ficha/${ficha.id}`} className={styles.fichaLink}>
+                <div className={styles.fotoContainer}>
+                  <img 
+                    src={ficha.foto_personagem || '/images/default-avatar.jpg'} 
+                    alt={`Foto de ${ficha.nome}`} 
+                    className={styles.fotoPersonagem}
+                  />
+                </div>
+                <div className={styles.cardInfo}>
+                  <h3 className={styles.nomePersonagem}>{ficha.nome}</h3>
+                  <span className={styles.classePersonagem}>
+                    {ficha.classes[0]?.nome || 'Classe'} - Nível {ficha.nivel}
+                  </span>
                 </div>
               </Link>
-            </div>
-          ))
-        ) : (
-          <p>Você ainda não tem nenhuma ficha. Que tal criar uma?</p>
-        )}
-      </div>
-    </div>
+              <button 
+                className={styles.deleteIcon} 
+                onClick={(e) => {
+                  e.stopPropagation(); // Impede que o clique no botão ative o link do card
+                  handleDelete(ficha.id);
+                }}
+                title="Apagar Ficha"
+              >
+                <FaTrash />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className={styles.nenhumaFicha}>
+          <p>Nenhuma ficha encontrada. Que tal criar a sua primeira aventura?</p>
+        </div>
+      )}
+    </main>
   );
 }
 

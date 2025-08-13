@@ -1,40 +1,48 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// 1. Importe o Layout e a nova HomePage
+// Importa os Layouts e Componentes
 import Layout from './components/Layout';
-import HomePage from './pages/HomePage'; // <-- IMPORTAR
+import PrivateRoute from './components/PrivateRoute'; // <-- IMPORTA O NOSSO PORTEIRO
 
-// Importe as outras páginas
-import LoginPage from './pages/LoginPage';
+// Importa as Páginas
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
 import FichasPage from './pages/FichasPage';
 import DetalheFichaPage from './pages/DetalheFichaPage';
 import NovaFichaPage from './pages/NovaFichaPage';
-import RegistroPage from './pages/RegistroPage';
-// (Seu componente PrivateRoute continua o mesmo)
-const PrivateRoute = ({ children }) => {
-  return children;
-};
+import CampanhasPage from './pages/campanhasPage';
+import EmBrevePage from './pages/EmBrevePage';
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Agora, todas as rotas principais ficam dentro do Layout */}
+        {/* Rota de Autenticação (pública, fora de qualquer layout) */}
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/login" element={<Navigate to="/auth" replace />} />
+        <Route path="/registrar" element={<Navigate to="/auth" replace />} />
+        
+        {/* Rotas que usam o Layout principal (com Header e Footer) */}
         <Route path="/" element={<Layout />}>
-          {/* A rota "index" é a que aparece quando o caminho é exatamente "/" */}
-          <Route index element={<HomePage />} />
-          
-          <Route path="fichas" element={/*<PrivateRoute>*/<FichasPage />/*</PrivateRoute>*/} />
-          <Route path="ficha/:id" element={/*<PrivateRoute>*/<DetalheFichaPage />/*</PrivateRoute>*/} />
-          <Route path="fichas/nova" element={/*<PrivateRoute>*/<NovaFichaPage />/*</PrivateRoute>*/} />
+            
+            {/* Rota da Homepage (pública) */}
+            <Route index element={<HomePage />} />
+
+            {/* AQUI ESTÁ A MÁGICA: Rotas que precisam de autenticação */}
+            <Route element={<PrivateRoute />}>
+                <Route path="fichas" element={<FichasPage />} />
+                <Route path="ficha/:id" element={<DetalheFichaPage />} />
+                <Route path="fichas/nova" element={<NovaFichaPage />} />
+                <Route path="campanhas" element={<CampanhasPage />} />
+                {/* Adicione outras rotas privadas aqui no futuro */}
+            </Route>
+
+            {/* Rota "Em Breve" (pode ser pública) */}
+            <Route path="embreve" element={<EmBrevePage />} />
+
         </Route>
-        
-        {/* A rota de login continua fora do Layout */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registrar" element={<RegistroPage />} />
-        
-        {/* Rota de fallback para 404 */}
       </Routes>
     </BrowserRouter>
   );
