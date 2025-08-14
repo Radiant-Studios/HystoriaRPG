@@ -1,0 +1,181 @@
+/* Container que envolve a página inteira */
+.authPageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #1a1d21;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232a2d34' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Caixa principal do formulário */
+.formBox {
+  width: 400px;
+  padding: 40px;
+  background: #2a2d34;
+  border: 1px solid #4f545c;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.formBox h1 {
+  font-family: 'EB Garamond', serif;
+  font-size: 36px;
+  text-align: center;
+  color: #f0f0f0;
+  margin: 0 0 30px 0;
+  font-weight: 700;
+}
+
+/* Container do campo de input */
+.inputbox {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin-bottom: 25px;
+}
+
+.inputbox input {
+  width: 100%;
+  height: 100%;
+  background: #1a1d21;
+  border: 1px solid #4f545c;
+  outline: none;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #e0e0e0;
+  padding: 0 45px 0 15px; /* Espaço para o ícone à direita */
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.inputbox input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+}
+
+/* Ícone de olho para mostrar/esconder senha */
+.passwordIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #8f949c;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.passwordIcon:hover {
+  color: #a78bfa;
+}
+
+/* Botão principal */
+.btn {
+  width: 100%;
+  height: 50px;
+  background: #7c3aed;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  color: #ffffff;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+  background-color: #8b5cf6;
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  background-color: #5f4c8b;
+  cursor: not-allowed;
+  transform: translateY(0);
+}
+
+/* Link para alternar entre login e registro */
+.switchLink {
+  font-size: 14.5px;
+  text-align: center;
+  margin-top: 25px;
+  color: #8f949c;
+}
+
+.switchLink a {
+  color: #a78bfa;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.switchLink a:hover {
+  text-decoration: underline;
+  color: #c4b5fd;
+}
+
+/* Mensagens de erro e sucesso */
+.errorMessage, .successMessage {
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+.errorMessage {
+  color: #fca5a5;
+  background-color: #7f1d1d;
+  border: 1px solid #ef4444;
+}
+
+.successMessage {
+  color: #a7f3d0;
+}
+
+
+/* =======================================================
+   ESTILOS PARA A ANIMAÇÃO DE VIRAR (FLIP)
+   ======================================================= */
+.flipContainer {
+  perspective: 1000px;
+  width: 400px;
+  min-height: 550px; /* Altura mínima para acomodar os formulários */
+}
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.showRegister .flipper {
+  transform: rotateY(180deg);
+}
+
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+/* Estilo para os ícones dentro dos inputs (como o de e-mail) */
+.inputIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #8f949c;
+}

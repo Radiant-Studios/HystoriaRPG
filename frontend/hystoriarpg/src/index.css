@@ -1,0 +1,28 @@
+/* Adicione este bloco no topo do seu arquivo */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #1d1f20; /* Um azul-escuro, cor principal do header */
+  --border-color: #4e5052; /* Uma borda um pouco mais clara que o fundo */
+  --text-primary: #e0e0e0;   /* Texto principal (branco) */
+  --text-secondary: #8f949c; /* Texto secundário (cinza claro para links) */
+  --accent-primary: #7c3aed;  /* Cor de destaque (azul) para hovers e bordas */
+}
+
+/* O resto do seu CSS global pode vir aqui */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232a2d34' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-color: #1a1d21; /* Cor de fundo base */
+}

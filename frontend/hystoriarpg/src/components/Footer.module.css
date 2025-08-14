@@ -1,0 +1,118 @@
+/* Estilo principal do footer, usando suas variáveis de cor */
+.siteFooter {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  padding: 50px 0 20px 0;
+  margin-top: 0px; /* Garante um espaço antes do footer */
+  font-size: 0.95rem;
+    border-top: 2px solid var black;
+}
+
+.footerContent {
+  display: flex;
+  flex-wrap: wrap; /* Permite que as colunas quebrem em telas menores */
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 40px; /* Espaço entre as colunas */
+}
+
+/* Coluna individual */
+.footerColumn {
+  flex: 1; /* Faz com que as colunas tentem ocupar o mesmo espaço */
+  min-width: 200px; /* Largura mínima antes de quebrar a linha */
+}
+
+.footerColumn h4 {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+/* Linha de destaque embaixo dos títulos */
+.footerColumn h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: var(--accent-primary);
+}
+
+.logoFooter {
+  width: 150px; /* Logo um pouco menor no footer */
+  margin-bottom: 15px;
+}
+
+.footerColumn p {
+  line-height: 1.6;
+}
+
+.footerColumn ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footerColumn ul li {
+  margin-bottom: 12px;
+}
+
+.footerColumn ul a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.3s ease, padding-left 0.3s ease;
+}
+
+.footerColumn ul a:hover {
+  color: var(--accent-primary);
+  padding-left: 5px;
+}
+
+/* Estilos para os ícones de redes sociais */
+.socialLinks {
+  display: flex;
+  gap: 15px;
+}
+
+.socialLinks a {
+  font-size: 1.8rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.socialLinks a:hover {
+  color: var(--accent-primary);
+  transform: translateY(-3px);
+}
+
+/* Barra de copyright no final */
+.footerBottom {
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+}
+
+/* ... (todo o seu CSS do footer existente) ... */
+
+.footerBottom {
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+}
+
+/* NOVO ESTILO PARA O AVISO */
+.disclaimer {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  max-width: 650px; /* Evita que a linha fique muito longa em telas grandes */
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,0 +1,41 @@
+/* Container que centraliza o conteúdo na página */
+.mainCentered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 40px 20px;
+  flex-grow: 1; 
+}
+
+/* A caixa principal da mensagem "Em Breve" */
+.embreveContainer {
+  max-width: 600px;
+  background-color: var(--bg-secondary);
+  padding: 50px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: var(--text-primary);
+}
+
+/* O ícone de construção */
+.embreveIcon {
+  font-size: 3rem;
+  color: var(--accent-primary);
+  margin-bottom: 20px;
+}
+
+.embreveContainer h1 {
+  font-family: 'EB Garamond', serif; /* Usando a mesma do login como alternativa */
+  font-size: 2.8rem;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+}
+
+.embreveContainer p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
