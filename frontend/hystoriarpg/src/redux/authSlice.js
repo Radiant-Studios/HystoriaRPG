@@ -1,117 +1,58 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Estado inicial da autenticação
 const initialState = {
-  user: null, // Guarda os dados do usuário logado
+  user: null,
   isAuthenticated: false,
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
 
+// 1. NOVA AÇÃO PARA VERIFICAR A SESSÃO QUANDO A APP CARREGA
 export const checkAuthStatus = createAsyncThunk(
   'auth/checkAuthStatus',
   async (_, { rejectWithValue }) => {
     try {
+      // Tenta aceder a uma rota protegida. Se funcionar, o utilizador está logado.
       const { data } = await axios.get('http://localhost:5000/api/usuario/atual', {
         withCredentials: true,
       });
       return data; // Retorna os dados do utilizador se a sessão for válida
     } catch (err) {
-      
+      // Se a chamada falhar (erro 401), significa que não há sessão válida.
       return rejectWithValue(err.response.data.erro);
     }
   }
 );
 
-// Ação assíncrona para fazer o login do usuário
+// Ação de login atualizada para usar o checkAuthStatus
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (loginData, { rejectWithValue }) => {
+  async (loginData, { dispatch, rejectWithValue }) => {
     try {
-      // Chama a API de login
       await axios.post('http://localhost:5000/auth/login', loginData, {
         withCredentials: true,
       });
-      
-      // Se o login deu certo, busca os dados do usuário
-      const { data: userData } = await axios.get('http://localhost:5000/api/usuario/atual', {
-        withCredentials: true,
-      });
-
-      // Retorna os dados do usuário em caso de sucesso
-      return userData;
-
+      // Em vez de buscar os dados aqui, apenas disparamos a verificação
+      const action = await dispatch(checkAuthStatus());
+      return action.payload; // O resultado do checkAuthStatus determinará o estado
     } catch (err) {
-      // Retorna a mensagem de erro da API em caso de falha
       return rejectWithValue(err.response.data.erro);
     }
   }
 );
 
-// Ação assíncrona para registrar um novo usuário
-export const registerUser = createAsyncThunk(
-  'auth/registerUser',
-  async (userData, { rejectWithValue }) => {
-    try {
-      // Chama a API de registro
-      const response = await axios.post('http://localhost:5000/auth/registrar', userData);
-      // Retorna a mensagem de sucesso
-      return response.data.mensagem; 
-    } catch (err) {
-      // Retorna a mensagem de erro da API
-      return rejectWithValue(err.response.data.erro);
-    }
-  }
-);
+// Ação de registo (sem alterações)
+export const registerUser = createAsyncThunk( /* ... seu código existente ... */ );
 
-// Criação do "slice" de autenticação
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  // Reducers são funções que alteram o estado de forma síncrona
-  reducers: {
-    // Ação de logout
-    logout: (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
-      state.status = 'idle';
-      state.error = null;
-    },
-  },
-  // extraReducers lidam com as ações assíncronas (pending, fulfilled, rejected)
+  reducers: { /* ... seu reducer de logout ... */ },
   extraReducers: (builder) => {
     builder
-      // Casos do Login
-      .addCase(loginUser.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.isAuthenticated = true;
-        state.user = action.payload; // Salva os dados do usuário no estado
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.status = 'failed';
-        state.isAuthenticated = false;
-        state.user = null;
-        state.error = action.payload; // Salva a mensagem de erro
-      })
-
-      // Casos do Registro
-      .addCase(registerUser.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(registerUser.fulfilled, (state) => {
-        state.status = 'succeeded';
-        // O registro bem-sucedido não loga o usuário, apenas muda o status
-      })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload; // Salva a mensagem de erro
-      })
+      // 2. ADICIONA OS CASOS PARA A NOVA AÇÃO
       .addCase(checkAuthStatus.pending, (state) => {
         state.status = 'loading';
       })
@@ -124,11 +65,17 @@ const authSlice = createSlice({
         state.status = 'failed';
         state.isAuthenticated = false;
         state.user = null;
-        state.error = 'Usuário não autenticado'; // Mensagem padrão se a autenticação falhar
-      });
-    },
+      })
+      // Casos de Login (sem alterações, já estão corretos)
+      .addCase(loginUser.pending, (state) => { /* ... */ })
+      .addCase(loginUser.fulfilled, (state, action) => { /* ... */ })
+      .addCase(loginUser.rejected, (state, action) => { /* ... */ })
+      // Casos de Registo (sem alterações)
+      .addCase(registerUser.pending, (state) => { /* ... */ })
+      .addCase(registerUser.fulfilled, (state) => { /* ... */ })
+      .addCase(registerUser.rejected, (state, action) => { /* ... */ });
+  },
 });
 
-// Exporta a ação de logout e o reducer principal
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;

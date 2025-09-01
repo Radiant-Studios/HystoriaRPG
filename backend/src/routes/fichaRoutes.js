@@ -12,11 +12,6 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // Limite de 5MB
 });
 
-// =========================================================================
-// DEFINIÇÃO DAS ROTAS
-// A lógica de cada rota agora está no 'fichaController'
-// =========================================================================
-
 // --- Rotas de Leitura (GET) ---
 router.get('/', fichaController.listarFichas);
 router.get('/:id', fichaController.buscarFichaPorId);

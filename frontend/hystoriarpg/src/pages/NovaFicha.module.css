@@ -1,201 +1,858 @@
-/* Container principal da página */
-.novaFichaContainer {
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 20px;
+.mainContainer {
+    width: 100%;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    color: var(--text-primary);
 }
 
-/* Estilo dos passos (steps) */
-.step {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+.title {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    margin-bottom: 40px;
 }
 
-.step.active {
-    display: block;
+.cardSelector {
+    --card-width: 350px;
+    --items: 10; /* Número máximo de itens para calcular o ângulo */
+    --radius: 380px;
+    --item-size: 140px;
+
+    position: relative;
+    width: var(--card-width);
+    aspect-ratio: 3 / 4.5;
+    background-image: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9));
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* O círculo invisível que contém e gira as cartas */
+.circleContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 1px;
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 1;
+}
+
+/* Cada carta posicionada no círculo */
+.circleItem {
+    --angle: calc((360deg / var(--items)) * var(--i));
+
+    position: absolute;
+    top: calc(var(--item-size) / -2);
+    left: calc(var(--item-size) / -2);
+    width: var(--item-size);
+    height: var(--item-size);
+    transform-origin: center;
+    transform: rotate(var(--angle)) translateY(calc(var(--radius) * -1)) rotate(calc(-1 * var(--angle)));
+}
+
+.circleItem img {
+    width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(6px 14px 10px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.circleItem:hover img {
     opacity: 1;
 }
 
-/* Títulos dos steps */
-.step h1 {
-    font-family: var(--font-heading);
-    color: var(--text-primary);
+.circleItem.active img {
+    transform: scale(1.15);
+    opacity: 1;
+    filter: drop-shadow(8px 16px 15px rgba(124, 58, 237, 0.4));
+}
+
+/* Conteúdo (descrição da carta selecionada) */
+.contents {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    overflow-y: auto;
+    padding: 1rem 2rem 2rem;
+    background: linear-gradient(to top, var(--bg-secondary) 60%, transparent);
     text-align: center;
-    font-size: 2.6rem;
+}
+
+.article {
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    /* Remove justify-content para controlar o espaço manualmente */
+    flex: 1; /* Faz o artigo ocupar o espaço disponível */
+    overflow: hidden; /* Garante que nada vaze */
+}
+
+.article h2 {
+    font-size: 1.8rem;
+    margin-block: 0 1rem;
+    font-family: 'Cinzel', serif;
+}
+
+.article ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.article li {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+.article li span {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+/* Botões de navegação e seleção */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.navButton {
+    font-size: 2.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    transition: color 150ms ease-in-out, transform 150ms ease-in-out;
+}
+
+.navButton:hover {
+    color: var(--accent-primary);
+    transform: scale(1.2);
+}
+
+.btnSelect {
+    padding: 10px 25px;
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: background-color 0.2s;
+}
+.btnSelect:hover {
+    background-color: var(--accent-hover);
+}
+
+/* ... (todo o seu CSS anterior) ... */
+
+/* NOVO: Estilos para a Etapa de Atributos */
+.atributosContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 40px auto;
+    justify-content: center;
+}
+
+.atributoBox {
+    position: relative; /* Essencial para posicionar os filhos */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 300px;
+    font-family: 'Cinzel', serif;
+    color: white;
+    display: flex; /* Usamos flex para alinhar o conteúdo principal */
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* NOVO: Container para agrupar os números */
+.valoresContainer {
+    text-align: center;
+    margin-top: 102px /* Aumente este valor para descer os números */
+}
+
+.bonusRacial {
+    color: #4ade80;
+    font-size: 1rem;
+    height: 20px; /* Garante um espaço consistente */
+}
+
+.valorTotal {
+    font-size: 2.8rem;
+    font-weight: bold;
+    line-height: 1;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.modificador {
+    display: none; /* <-- ADICIONE APENAS ESTA LINHA */
+    font-size: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid var(--border-color);
+    margin-top: 8px;
+}
+.controlesBase {
+    position: absolute; /* Posição absoluta para fixar no fundo */
+    bottom: 25px; /* Distância do fundo */
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza horizontalmente */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(17, 24, 39, 0.5); /* Fundo leve para destaque */
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.controlesBase button {
+    background: var(--accent-primary);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.controlesBase button:hover {
+    background-color: var(--accent-hover);
+}
+
+.controlesBase button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.valorBase {
+    font-size: 1.8rem;
+    font-weight: bold;
+    width: 40px;
+    text-align: center;
+}
+
+.pontosInfo {
+    text-align: center;
+    margin-bottom: 20px; /* Movido de margin-top para margin-bottom */
+    font-size: 1.5rem;
+}
+
+.pontosInfo span {
+    font-weight: bold;
+    color: var(--accent-primary);
+    font-size: 2rem;
+}
+
+/* Adicione esta classe ao final do seu arquivo CSS */
+.buttonContainerCenter {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 40px;
+}
+
+/* Adicione no final de NovaFicha.module.css */
+
+.escolhasRaciaisContainer {
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+    background: var(--bg-secondary);
+    padding: 20px 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.escolhasRaciaisContainer h3 {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    margin-top: 0;
+    color: var(--accent-primary);
+}
+
+.escolhaGrupo p {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.checkboxGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    justify-items: center;
+}
+
+.checkboxGrid label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.checkboxGrid input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+/* ================================================================ */
+/* CSS APRIMORADO PARA A TELA DE PERÍCIAS                           */
+/* ================================================================ */
+
+.periciasContainer {
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    background: var(--bg-secondary);
+    padding: 30px 40px; /* Mais padding */
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* Informações no topo da tela de perícias */
+.periciasInfo {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-color); /* Linha divisória */
+}
+
+.periciasInfo p {
+    margin: 5px 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.periciasInfo strong {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+}
+
+/* Grid que contém todos os checkboxes de perícias */
+.periciasGrid {
+    display: grid;
+    /* Colunas responsivas que se ajustam ao tamanho da tela */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px; /* Espaçamento entre os itens */
+}
+
+/* Estilo de cada item individual (label + checkbox) */
+.periciaItem {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.periciaItem:hover {
+    border-color: var(--accent-hover);
+    transform: translateY(-2px); /* Efeito de elevação */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo quando uma perícia é selecionada */
+.periciaItem.checked {
+    background-color: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+    font-weight: 700;
+}
+
+/* Estilo para perícias já adquiridas e desabilitadas */
+.periciaItem.disabled {
+    background-color: var(--bg-disabled);
+    color: var(--text-primary);
+    cursor: not-allowed;
+    font-style: italic;
+    opacity: 0.7;
+    transform: none; /* Remove efeito de elevação */
+    box-shadow: none;
+}
+
+/* Esconde o checkbox padrão do navegador */
+.periciaItem input[type="checkbox"] {
+    display: none;
+}
+
+/* Cria um checkbox customizado no lugar */
+.periciaItem::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-secondary);
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0; /* Impede que o checkbox encolha */
+}
+
+/* Estilo do checkbox customizado quando selecionado */
+.periciaItem.checked::before {
+    background-color: #fff;
+    border-color: #fff;
+    /* Adiciona um "check" usando pseudo-elementos */
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%236d28d9' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+
+/* Estilo do checkbox customizado quando desabilitado */
+.periciaItem.disabled::before {
+    background-color: var(--bg-disabled);
+    border-color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+.finalFormContainer {
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+    background: var(--bg-secondary);
+    padding: 30px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: black;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box; /* Garante que o padding não aumente a largura */
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+}
+
+.errorMessage {
+    color: #ef4444; /* Vermelho para erros */
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+/* Estilo para a seção de resumo "escondido" */
+.resumoDetails {
+    max-width: 800px;
+    margin: 40px auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+}
+
+.resumoDetails summary {
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--accent-primary);
+    padding: 15px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    list-style: none; /* Remove a seta padrão do 'details' */
+}
+
+.resumoDetails summary::-webkit-details-marker {
+    display: none; /* Remove a seta padrão no Chrome/Safari */
+}
+
+.resumoDetails summary:hover {
+    background-color: black;
+}
+
+.resumoFinalContainer {
+    padding: 0 30px 30px 30px;
+    color: var(--text-primary);
+}
+
+.resumoFinalContainer h3 {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    margin: 20px 0;
+}
+
+.versatilSlot {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.versatilSlot select {
+  flex: 1;
+  padding: 10px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.versatilSlot select:first-child {
+  flex: 0 0 150px; /* Largura fixa para o seletor de tipo */
+}
+
+/* Adicione no final do seu arquivo NovaFicha.module.css */
+
+.magiasGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.magiaItemContainer {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+.magiaItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  cursor: pointer;
+}
+
+.magiaLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  flex-grow: 1;
+}
+
+.magiaLabel input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.setaExpansao {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  padding: 5px;
+}
+
+.magiaItemContainer.expanded .setaExpansao {
+  transform: rotate(180deg);
+}
+
+.magiaDetalhes {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+  padding: 0 20px;
+  color: var(--text-secondary);
+  border-top: 1px solid transparent;
+}
+
+.magiaItemContainer.expanded .magiaDetalhes {
+  max-height: 500px; /* Altura suficiente para qualquer descrição */
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.magiaDetalhes p {
+  margin-top: 0;
+}
+
+.magiaDetalhes ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.magiaDetalhes li {
+  margin-bottom: 5px;
+}
+
+/* ================================================================ */
+/* NOVOS ESTILOS PARA O SELETOR COM SWIPER                          */
+/* ================================================================ */
+
+.swiperContainer {
+    width: 100%;
+    max-width: 1000px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    margin: 0 auto;
+}
+
+.swiperSlide {
+    background-position: center;
+    background-size: cover;
+    width: 300px;
+    height: 420px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+}
+
+.swiperSlide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Estilos para os botões de navegação e paginação do Swiper */
+:global(.swiper-button-next),
+:global(.swiper-button-prev) {
+    color: var(--accent-primary) !important;
+}
+
+:global(.swiper-pagination-bullet-active) {
+    background-color: var(--accent-primary) !important;
+}
+
+/* Container para os detalhes do item selecionado */
+.selectionDetails {
+    max-width: 700px;
+    margin: 20px auto 0 auto;
+    padding: 20px;
+    text-align: center;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.selectionDetails h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    margin-top: 0;
+}
+
+.detailsContent {
+    max-height: 200px; /* Limita a altura e adiciona scroll se necessário */
+    overflow-y: auto;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    padding-right: 10px; /* Espaço para a barra de rolagem */
+}
+
+.detailsContent ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+}
+
+.detailsContent li {
+    margin-bottom: 8px;
+}
+
+.detailsContent li span {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+.listSelectorContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    height: 600px; /* Altura fixa para a lista rolável */
+}
+
+.listSwiper {
+    height: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.listItemWrapper {
+    height: auto !important;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+}
+.listItemWrapper:last-child {
+    border-bottom: none;
+}
+
+.listItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 25px; /* Mais padding vertical */
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.listItem:hover {
+    background-color: #000000;
+}
+
+.listItemSelected {
+    background-color: #000000;
+    color: white;
+}
+
+.listItemSelected .setaExpansao {
+    transform: rotate(180deg);
+    color: white;
+}
+
+.setaExpansao {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    padding: 5px;
+}
+
+.listItemDetails {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.3s ease-out;
+    padding: 0 25px;
+    background-color: #000000; /* Fundo um pouco diferente para destaque */
+}
+
+.listItemDetails.expanded {
+    max-height: 600px;
+    padding: 20px 25px 25px 25px;
+    transition: max-height 0.5s ease-in, padding 0.4s ease-in;
+}
+
+.detailsContent {
+    color: var(--text-secondary);
+}
+
+/* NOVO: Título para seções de detalhes */
+.detailsContent h4 {
+    font-family: 'Cinzel', serif;
+    color: var(--accent-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-top: 0;
     margin-bottom: 15px;
 }
 
-/* Texto de resumo da seleção */
-.selectionSummary {
-    text-align: center;
-    color: #dc9434;
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 40px;
-    min-height: 1.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* A nova grid para as caixas de seleção */
-.selectionGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas */
-    gap: 20px; /* Espaço entre as caixas */
-}
-
-/* Estilo de cada caixa (card) */
-.card {
-    background-color: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 5px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    border-color: rgb(87, 7, 133);
-}
-
-/* Container da imagem */
-.cardImage {
-    width: 100%;
-    height: 150px;
-    background-color: rgb(245, 245, 245); /* Cor de fundo caso a imagem falhe */
-    background-size: cover;
-    background-position: center;
-    border-bottom: 2px solid var(--border-color);
-}
-
-/* Título da caixa */
-.cardTitle {
-    font-family: var(--font-heading);
-    font-size: 1.3rem;
-    color: var(--text-primary);
-    padding: 15px;
-    text-align: center;
-}
-
-/* Conteúdo expansível */
-.cardContent {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    padding: 0 20px; /* Mantém o padding lateral para evitar que o conteúdo salte */
-    color: var(--text-secondary);
+.detailsContent p {
+    margin-top: 0;
+    margin-bottom: 25px; /* Espaço após a descrição */
     line-height: 1.6;
-    /* TRANSIÇÃO MELHORADA AQUI */
-    transition: max-height 0.6s ease-in-out, opacity 0.3s ease-in-out 0.2s, padding 0.5s ease-in-out;
 }
 
-/* Estilo para quando a caixa está ativa/expandida */
-.card.active {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+.detailsContent ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Estilo para quando a caixa está ativa/expandida */
-.card.active .cardContent {
-    max-height: 1000px; /* Valor alto para permitir a expansão */
-    opacity: 1;
-    /* A transição do padding acontece aqui */
-    padding: 0 20px 20px 20px;
+.detailsContent li {
+    margin-bottom: 10px;
 }
 
-
-.cardContent ul {
-    list-style-position: inside;
-    padding-left: 10px;
-    margin-bottom: 20px;
+.detailsContent li span {
+    font-weight: 600;
+    color: var(--accent-primary);
 }
 
-.cardContent span {
-    font-weight: 700;
-    color: var(--text-primary);
+/* Personalização da barra de rolagem do Swiper */
+:global(.swiper-scrollbar-drag) {
+    background-color: var(--accent-primary) !important;
 }
 
-/* Botão de seleção dentro da caixa */
-.cardContent .btn {
-    width: 100%;
-    margin-top: 10px;
+.radioGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
-/* Formulário final */
-#identidadeForm .inputbox {
-    margin-bottom: 20px;
+.radioGrid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
 }
 
-#identidadeForm .inputbox input,
-#identidadeForm .inputbox textarea {
-    width: 100%;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    outline: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: var(--font-body);
-    color: var(--text-primary);
-    padding: 12px 15px;
-    transition: border-color 0.3s, box-shadow 0.3s;
+.radioGrid input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
-#identidadeForm .inputbox textarea {
-    min-height: 120px;
-    resize: vertical;
+.detalhesChassi {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
 }
 
-#identidadeForm .inputbox input:focus,
-#identidadeForm .inputbox textarea:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+.detalhesChassi ul {
+  list-style: none;
+  padding: 0;
 }
-
-#identidadeForm .btn {
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* Adicione este bloco ao seu NovaFicha.module.css */
-
-.btn {
-    width: 100%;
-    height: 40px;
-    background: var(--accent-primary);
-    border: none;
-    outline: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1em;
-    color: #ffffff;
-    font-weight: 00;
-    transition: background-color 0.2s, transform 0.2s;
-    margin-top: 5px;
-}
-
-.btn:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-2px);
-}
-
-.btn:disabled {
-    background-color: #5f4c8b; /* Uma cor de destaque mais escura para desativado */
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Media query para telas menores (telemóveis) */
-@media (max-width: 768px) {
-    .selectionGrid {
-        grid-template-columns: repeat(2, 1fr); /* 2 colunas */
-    }
-}
-
-@media (max-width: 480px) {
-    .selectionGrid {
-        grid-template-columns: 1fr; /* 1 coluna */
-    }
+.detalhesChassi li span {
+  font-weight: 600;
+  color: var(--accent-primary);
 }

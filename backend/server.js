@@ -11,14 +11,16 @@ const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const campanhaRoutes = require('./src/routes/campanhasRoutes');
 const fichaRoutes = require('./src/routes/fichaRoutes');
+const jogoRoutes = require('./src/routes/jogoRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// CORREÇÃO 2: Alterado a porta padrão para 3001 para evitar conflito com o React
+const PORT = process.env.PORT || 3001;
 
 
 // --- Middlewares ---
 
-// Permite a comunicação com o frontend em React
+// Permite a comunicação com o frontend em React (que roda na porta 3000)
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
@@ -35,8 +37,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Definição das Rotas da API ---
 
-// Rotas públicas (login, registro)
+// Rotas públicas (login, registro e dados do jogo)
 app.use('/auth', authRoutes);
+// CORREÇÃO 1: Rota do jogo agora é pública e usa o caminho correto (singular)
+app.use('/api/jogo', jogoRoutes);
 
 // Rotas protegidas (exigem login)
 app.use('/api/usuario', autenticarUsuario, userRoutes);
@@ -46,13 +50,11 @@ app.use('/api/fichas', autenticarUsuario, fichaRoutes);
 
 // --- Tratamento de Erros ---
 app.use((err, req, res, next) => {
-    // Trata erros de upload (arquivo muito grande)
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({ erro: 'Arquivo muito grande. O limite é de 5MB.' });
         }
     }
-    // Loga o erro e envia uma resposta genérica
     console.error(err);
     res.status(500).json({ erro: 'Ocorreu um erro inesperado no servidor.' });
 });

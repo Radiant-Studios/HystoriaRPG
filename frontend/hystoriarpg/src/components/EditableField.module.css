@@ -1,0 +1,38 @@
+.span {
+    cursor: pointer;
+    transition: border-color 0.2s;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.span:hover {
+    /* border-bottom-color: var(--accent-primary); */ /* Manter se quiser o efeito de hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Um leve brilho ao passar o mouse */
+}
+
+.input {
+    /* Ajustes para o input */
+    width: 100%; /* Ocupar a largura total do container pai */
+    height: 100%; /* Ocupar a altura total do container pai */
+    padding: 0; /* Remover padding padrão para melhor controle */
+    font-size: 2.2rem; /* Tamanho da fonte igual ao do span */
+    font-weight: 700;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.007); /* Fundo semi-transparente */
+    color: white;
+    border-radius: 4px;
+    box-sizing: border-box; /* Garante que padding/borda não aumentem o tamanho total */
+}
+
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type=number] {
+  -moz-appearance: textfield;
+}

@@ -8,7 +8,7 @@ body,
 }
 
 :root {
-  --bg-primary: #ffffff;
+  --bg-primary: #000000;
   --bg-secondary: #1d1f20; /* Um azul-escuro, cor principal do header */
   --border-color: #4e5052; /* Uma borda um pouco mais clara que o fundo */
   --text-primary: #e0e0e0;   /* Texto principal (branco) */

@@ -179,3 +179,28 @@
   font-size: 20px;
   color: #8f949c;
 }
+
+.formBox {
+  width: 400px;
+  padding: 40px;
+  background: #2a2d34;
+  border: 1px solid #4f545c;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  
+  /* APLICA A NOSSA NOVA ANIMAÇÃO AQUI */
+  animation: reveal 0.8s ease-out forwards;
+}
+
+/* Define a animação */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

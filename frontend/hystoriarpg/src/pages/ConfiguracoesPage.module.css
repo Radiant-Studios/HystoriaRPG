@@ -1,0 +1,160 @@
+.main {
+    width: 90%;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.main h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-primary);
+}
+
+.configSection {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 25px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sectionHeader h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.displayInfo p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Formulários de Edição */
+.editForm {
+    margin-top: 20px;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.formActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Botões */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btnPrimary {
+    background-color: var(--accent-primary);
+    color: white;
+}
+.btnPrimary:hover {
+    background-color: #4ea8e1;
+}
+
+.btnSecondary {
+    background-color: #4f545c;
+    color: white;
+}
+.btnSecondary:hover {
+    background-color: #6a717c;
+}
+
+.editBtn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+.editBtn:hover {
+    background-color: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+/* Estilos para Upload de Foto */
+.profilePicContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profilePic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+/* Mensagens de Feedback */
+.success, .error {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+}
+.success {
+    background-color: rgba(22, 163, 74, 0.2);
+    color: #16a34a;
+    border: 1px solid #16a34a;
+}
+.error {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+
+/* Botão de Upload Customizado */
+.fileUploadLabel {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+.fileUploadLabel:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}

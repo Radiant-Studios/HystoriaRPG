@@ -1,90 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
-import styles from './FichasPage.module.css'; // Importa o nosso novo estilo
-import { FaTrash } from 'react-icons/fa'; // Ícone de lixo
-import LoadingSpinner from '../components/LoadingSpinner'; // Importa o componente de loading
+import styles from './FichasPage.module.css';
+import axios from 'axios';
 
 function FichasPage() {
-  const [fichas, setFichas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [fichas, setFichas] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchFichas = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/fichas', {
-          withCredentials: true,
-        });
-        setFichas(response.data);
-      } catch (err) {
-        setError('Falha ao carregar as fichas. Por favor, tente fazer o login novamente.');
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+        const fetchFichas = async () => {
+            try {
+                const API_URL = 'http://localhost:5000';
+                const response = await axios.get(`${API_URL}/api/fichas`, { withCredentials: true });
+                setFichas(response.data);
+            } catch (err) {
+                setError('Não foi possível carregar suas fichas. Tente novamente mais tarde.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFichas();
+    }, []);
+
+    // --- NOVA FUNÇÃO PARA DELETAR A FICHA ---
+    const handleDelete = async (e, fichaId) => {
+        // Previne que o clique no botão ative o Link para a página de detalhes
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Pede confirmação ao usuário
+        if (window.confirm('Tem certeza que deseja excluir este personagem? Esta ação não pode ser desfeita.')) {
+            try {
+                const API_URL = 'http://localhost:5000';
+                await axios.delete(`${API_URL}/api/fichas/${fichaId}`, { withCredentials: true });
+
+                // Atualiza o estado para remover a ficha da tela instantaneamente
+                setFichas(fichasAtuais => fichasAtuais.filter(ficha => ficha.id !== fichaId));
+
+            } catch (err) {
+                setError('Não foi possível excluir a ficha. Tente novamente.');
+                console.error(err);
+            }
+        }
     };
-    fetchFichas();
-  }, []);
 
-  const handleDelete = async (fichaId) => {
-    if (!window.confirm('Tem a certeza de que deseja apagar esta ficha? Esta ação é irreversível.')) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/fichas/${fichaId}`, { withCredentials: true });
-      setFichas(fichas.filter(f => f.id !== fichaId));
-    } catch (err) {
-      alert('Erro ao apagar a ficha.');
+    if (loading) {
+        return <div className={styles.container}><h1 className={styles.title}>Carregando suas fichas...</h1></div>;
     }
-  };
 
-  if (loading) return <LoadingSpinner />; // <-- USA O SPINNER EM VEZ DO TEXTO
-  
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+    if (error) {
+        return <div className={styles.container}><p className={styles.error}>{error}</p></div>;
+    }
 
-  return (
-    <main className={styles.main}>
-      <Link to="/fichas/nova" className={styles.btnNovaFicha}>
-        Criar Nova Ficha
-      </Link>
-      
-      {fichas.length > 0 ? (
-        <ul className={styles.fichasList}>
-          {fichas.map(ficha => (
-            <li key={ficha.id} className={styles.fichaItem}>
-              <Link to={`/ficha/${ficha.id}`} className={styles.fichaLink}>
-                <div className={styles.fotoContainer}>
-                  <img 
-                    src={ficha.foto_personagem || '/images/default-avatar.jpg'} 
-                    alt={`Foto de ${ficha.nome}`} 
-                    className={styles.fotoPersonagem}
-                  />
+    return (
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h1 className={styles.title}>Meus Personagens</h1>
+                <Link to="/novaficha" className={styles.newCharButton}>
+                    + Criar Novo Personagem
+                </Link>
+            </div>
+
+            {fichas.length === 0 ? (
+                <p className={styles.noCharsMessage}>Você ainda não tem nenhum personagem. Que tal criar um agora?</p>
+            ) : (
+                <div className={styles.grid}>
+                    {fichas.map(ficha => (
+                        <Link to={`/fichas/${ficha.id}`} key={ficha.id} className={styles.card}>
+                            <img 
+                                src={ficha.foto_personagem || '/images/default-avatar.jpg'} 
+                                alt={`Foto de ${ficha.nome}`} 
+                                className={styles.cardImage} 
+                            />
+                            <div className={styles.cardBody}>
+                                <h2 className={styles.cardTitle}>{ficha.nome}</h2>
+                                <p className={styles.cardSubtitle}>
+                                    {ficha.raca.nome} {ficha.classes[0].nome.nome} Nível {ficha.nivel}
+                                </p>
+                                
+                                {/* --- BOTÃO DE LIXEIRA ADICIONADO AQUI --- */}
+                                <button 
+                                    className={styles.deleteButton} 
+                                    onClick={(e) => handleDelete(e, ficha.id)}
+                                    title="Excluir personagem"
+                                >
+                                    🗑️
+                                </button>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
-                <div className={styles.cardInfo}>
-                  <h3 className={styles.nomePersonagem}>{ficha.nome}</h3>
-                  <span className={styles.classePersonagem}>
-                    {ficha.classes[0]?.nome || 'Classe'} - Nível {ficha.nivel}
-                  </span>
-                </div>
-              </Link>
-              <button 
-                className={styles.deleteIcon} 
-                onClick={(e) => {
-                  e.stopPropagation(); // Impede que o clique no botão ative o link do card
-                  handleDelete(ficha.id);
-                }}
-                title="Apagar Ficha"
-              >
-                <FaTrash />
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div className={styles.nenhumaFicha}>
-          <p>Nenhuma ficha encontrada. Que tal criar a sua primeira aventura?</p>
+            )}
         </div>
-      )}
-    </main>
-  );
+    );
 }
 
 export default FichasPage;

@@ -1,0 +1,12 @@
+/* O estado inicial do container: invisível e ligeiramente deslocado para baixo */
+.revealContainer {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* O estado final, quando o componente se torna visível */
+.revealContainer.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

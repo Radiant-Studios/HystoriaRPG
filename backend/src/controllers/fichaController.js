@@ -1,14 +1,7 @@
 const supabase = require('../config/supabaseClient');
 const { v4: uuidv4 } = require('uuid');
 
-// No futuro, estes dados podem vir de um local mais robusto
-const classesData = require('../config/classesData.js');
-const racasData = require('../config/racasData.js');
-
-// =========================================================================
-// FUNÇÕES DE LEITURA (GET)
-// =========================================================================
-
+// ... (a função listarFichas continua a mesma)
 const listarFichas = async (req, res) => {
     try {
         const { data: fichas, error } = await supabase.from('fichas').select('*').eq('user_id', req.userId);
@@ -20,77 +13,116 @@ const listarFichas = async (req, res) => {
     }
 };
 
+
+// FUNÇÃO ATUALIZADA PARA BUSCAR DADOS RELACIONADOS
 const buscarFichaPorId = async (req, res) => {
     try {
         const { id } = req.params;
-        const { data: ficha, error } = await supabase
+
+        // 1. Busca a ficha principal
+        const { data: ficha, error: fichaError } = await supabase
             .from('fichas')
             .select('*')
             .eq('id', id)
             .eq('user_id', req.userId)
             .single();
 
-        if (error) {
-            if (error.code === 'PGRST116') {
+        if (fichaError) {
+            if (fichaError.code === 'PGRST116') {
                 return res.status(404).json({ erro: 'Ficha não encontrada ou você não tem permissão para vê-la.' });
             }
-            throw error;
+            throw fichaError;
         }
 
-        res.json(ficha);
+        // 2. Busca os poderes relacionados
+        const { data: poderes, error: poderesError } = await supabase
+            .from('fichas_poderes')
+            .select('poderes (*)') // Pega todos os dados da tabela 'poderes'
+            .eq('ficha_id', id);
+        
+        if (poderesError) throw poderesError;
+
+        // 3. Busca as magias relacionadas
+        const { data: magias, error: magiasError } = await supabase
+            .from('fichas_magias')
+            .select('magias (*)') // Pega todos os dados da tabela 'magias'
+            .eq('ficha_id', id);
+
+        if (magiasError) throw magiasError;
+        
+        // 4. Junta tudo em um único objeto de resposta
+        const fichaCompleta = {
+            ...ficha,
+            poderes: poderes.map(p => p.poderes), // Extrai o objeto do poder
+            magias: magias.map(m => m.magias)      // Extrai o objeto da magia
+        };
+
+        res.json(fichaCompleta);
     } catch (error) {
-        console.error('Erro ao recuperar a ficha:', error);
+        console.error('Erro ao recuperar a ficha detalhada:', error);
         res.status(500).json({ erro: 'Erro interno do servidor.' });
     }
 };
 
-// =========================================================================
-// FUNÇÕES DE CRIAÇÃO E DELEÇÃO (POST, DELETE)
-// =========================================================================
-
+// FUNÇÃO ATUALIZADA PARA SALVAR TODOS OS DADOS INICIAIS
 const criarFicha = async (req, res) => {
+    const { poderes, magias, pericias, ...dadosDaFicha } = req.body;
+    const userId = req.userId;
+
     try {
-        const { nomePersonagem, historia, raca, classe, origem } = req.body;
-        const userId = req.userId;
-
-        if (!nomePersonagem || !raca || !classe || !origem) {
-            return res.status(400).json({ success: false, erro: 'Dados da ficha incompletos.' });
-        }
-
-        const classeNormalizada = classe.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const dadosClasse = classesData[classeNormalizada];
-        if (!dadosClasse) {
-            return res.status(400).json({ success: false, erro: `Classe "${classe}" inválida.` });
-        }
-
-        const { data, error } = await supabase
+        const { data: novaFicha, error: fichaError } = await supabase
             .from('fichas')
-            .insert([{
+            .insert({
                 user_id: userId,
-                nome: nomePersonagem,
-                historia: historia,
-                raca: raca,
-                classes: [{ nome: classe, nivel: 1 }],
-                origem: origem,
+                nome: dadosDaFicha.nomePersonagem,
+                historia: dadosDaFicha.historia,
+                raca: dadosDaFicha.raca,
+                // A classe agora é salva com o objeto inteiro dentro de 'nome'
+                classes: [{ nome: dadosDaFicha.classe, nivel: 1 }], 
+                origem: dadosDaFicha.origem,
                 nivel: 1,
-                atributos: { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 },
-                pericias: {},
-                pontos_de_vida_max: dadosClasse.basePV,
-                pontos_de_vida_atual: dadosClasse.basePV,
-                pontos_de_mana_max: dadosClasse.basePM,
-                pontos_de_mana_atual: dadosClasse.basePM,
-            }])
+                atributos: dadosDaFicha.atributosFinais,
+                pontos_de_vida_max: dadosDaFicha.pv,
+                pontos_de_vida_atual: dadosDaFicha.pv,
+                pontos_de_mana_max: dadosDaFicha.pm,
+                pontos_de_mana_atual: dadosDaFicha.pm,
+                pericias: pericias // SALVANDO AS PERÍCIAS
+            })
             .select()
             .single();
 
-        if (error) throw error;
-        res.status(201).json(data);
+        if (fichaError) throw fichaError;
+
+        const fichaId = novaFicha.id;
+
+        if (poderes && poderes.length > 0) {
+            const poderesParaInserir = poderes.map(poder => ({
+                ficha_id: fichaId,
+                poder_id: poder.id
+            }));
+            const { error: poderesError } = await supabase.from('fichas_poderes').insert(poderesParaInserir);
+            if (poderesError) throw poderesError;
+        }
+        
+        if (magias && magias.length > 0) {
+            const magiasParaInserir = magias.map(magia => ({
+                ficha_id: fichaId,
+                magia_id: magia.id
+            }));
+            const { error: magiasError } = await supabase.from('fichas_magias').insert(magiasParaInserir);
+            if (magiasError) throw magiasError;
+        }
+
+        res.status(201).json(novaFicha);
+
     } catch (error) {
-        console.error('Erro no servidor ao criar ficha:', error);
-        res.status(500).json({ success: false, erro: 'Erro interno do servidor ao criar a ficha.' });
+        console.error('Erro detalhado ao criar ficha:', error);
+        res.status(500).json({ erro: 'Ocorreu um erro no servidor ao tentar criar a ficha completa.' });
     }
 };
 
+
+// ... (o resto do arquivo 'deletarFicha', 'atualizarInfoGeral', etc., continua o mesmo)
 const deletarFicha = async (req, res) => {
     const { id } = req.params;
     const userId = req.userId;
@@ -104,10 +136,6 @@ const deletarFicha = async (req, res) => {
         res.status(500).json({ erro: 'Erro interno do servidor ao deletar a ficha.' });
     }
 };
-
-// =========================================================================
-// FUNÇÕES DE ATUALIZAÇÃO (UPDATE)
-// =========================================================================
 
 const atualizarInfoGeral = async (req, res) => {
     const { id } = req.params;
@@ -226,10 +254,6 @@ const atualizarFoto = async (req, res) => {
     }
 };
 
-// =========================================================================
-// FUNÇÕES PARA HABILIDADES E CLASSES (ARRAYS JSON)
-// =========================================================================
-
 const adicionarHabilidade = async (req, res) => {
     const { id } = req.params;
     const { habilidade } = req.body;
@@ -289,7 +313,6 @@ const atualizarClasses = async (req, res) => {
     }
 };
 
-// Exporta todas as funções para as rotas poderem usá-las
 module.exports = {
     listarFichas,
     buscarFichaPorId,

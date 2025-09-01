@@ -1,47 +1,62 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Importa os Layouts e Componentes
-import Layout from './components/Layout';
-import PrivateRoute from './components/PrivateRoute'; // <-- IMPORTA O NOSSO PORTEIRO
+// 1. Importe a nova ação e o seu LoadingSpinner
+import { checkAuthStatus } from './redux/authSlice';
+import LoadingSpinner from './components/LoadingSpinner'; 
 
-// Importa as Páginas
+// ... outros imports
+import Layout from './components/Layout';
+import PrivateRoute from './components/PrivateRoute';
 import HomePage from './pages/HomePage';
 import AuthPage from './pages/AuthPage';
 import FichasPage from './pages/FichasPage';
-import DetalheFichaPage from './pages/DetalheFichaPage';
+import FichaDetalhadaPage from './pages/FichaDetalhadaPage';
 import NovaFichaPage from './pages/NovaFichaPage';
 import CampanhasPage from './pages/campanhasPage';
 import EmBrevePage from './pages/EmBrevePage';
-
+import ConfiguracoesPage from './pages/ConfiguracoesPage';
+import ScrollToTop from 'components/ScrollToTop';
+// ... etc
 
 function App() {
+  const dispatch = useDispatch();
+  // Busca o status diretamente do Redux
+  const authStatus = useSelector((state) => state.auth.status);
+
+  // 2. ESTE useEffect é executado apenas uma vez quando a App é montada
+  useEffect(() => {
+    dispatch(checkAuthStatus());
+  }, [dispatch]);
+
+  // 3. Enquanto o status for 'idle' ou 'loading', mostra o spinner
+  //    Isto impede que a aplicação mostre qualquer página antes de saber se o utilizador está logado
+  if (authStatus === 'idle' || authStatus === 'loading') {
+    return <LoadingSpinner />;
+  }
+
+  // 4. Apenas depois da verificação, renderiza as rotas
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
-        {/* Rota de Autenticação (pública, fora de qualquer layout) */}
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/login" element={<Navigate to="/auth" replace />} />
         <Route path="/registrar" element={<Navigate to="/auth" replace />} />
         
-        {/* Rotas que usam o Layout principal (com Header e Footer) */}
         <Route path="/" element={<Layout />}>
-            
-            {/* Rota da Homepage (pública) */}
-            <Route index element={<HomePage />} />
+          <Route index element={<HomePage />} />
 
-            {/* AQUI ESTÁ A MÁGICA: Rotas que precisam de autenticação */}
-            <Route element={<PrivateRoute />}>
-                <Route path="fichas" element={<FichasPage />} />
-                <Route path="ficha/:id" element={<DetalheFichaPage />} />
-                <Route path="fichas/nova" element={<NovaFichaPage />} />
-                <Route path="campanhas" element={<CampanhasPage />} />
-                {/* Adicione outras rotas privadas aqui no futuro */}
-            </Route>
+          <Route element={<PrivateRoute />}>
+            <Route path="fichas" element={<FichasPage />} />
+            <Route path="fichas/:id" element={<FichaDetalhadaPage />} />
+            <Route path="fichas/nova" element={<NovaFichaPage />} />
+            <Route path="campanhas" element={<CampanhasPage />} />
+            <Route path="configuracoes" element={<ConfiguracoesPage />} />
+          </Route>
 
-            {/* Rota "Em Breve" (pode ser pública) */}
-            <Route path="embreve" element={<EmBrevePage />} />
-
+          <Route path="embreve" element={<EmBrevePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

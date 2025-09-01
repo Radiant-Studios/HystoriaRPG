@@ -93,13 +93,6 @@
   transform: scale(1.1);
 }
 
-/* ... (todo o seu CSS existente continua aqui) ... */
-
-.profileButton:hover {
-  border-color: var(--accent-primary);
-  transform: scale(1.1);
-}
-
 /* ==============================================================
    NOVO ESTILO PARA O BOTÃO DE LOGIN
    ============================================================== */
@@ -115,6 +108,62 @@
 }
 
 .loginButton:hover {
-  background-color: #c44ee1; /* Um tom de azul um pouco mais claro no hover */
+  background-color: #a78bfa; /* Um tom de azul um pouco mais claro no hover */
   transform: translateY(-2px);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 60px; /* Distância do topo (abaixo do botão de perfil) */
+  right: 0;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  width: 200px;
+  z-index: 110;
+  overflow: hidden;
+  /* Animação de fade-in */
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dropdownMenu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdownMenu ul li a,
+.dropdownMenu ul li button {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  box-sizing: border-box; /* Garante que o padding não quebre o layout */
+}
+
+.dropdownMenu ul li a:hover,
+.dropdownMenu ul li button:hover {
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+/* Animação para o menu aparecer suavemente */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

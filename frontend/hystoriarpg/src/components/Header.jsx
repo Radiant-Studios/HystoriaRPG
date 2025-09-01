@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
@@ -9,16 +9,37 @@ function Header() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+  // 1. NOVO ESTADO para controlar a visibilidade do dropdown
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null); // Referência para o menu, para saber se clicámos fora
+
   const handleLogout = async () => {
-    // ... (lógica do logout não muda)
     try {
       await axios.post('http://localhost:3000/auth/logout', {}, { withCredentials: true });
       dispatch(logout());
-      // No futuro, podemos querer navegar para '/login' aqui
+      setIsMenuOpen(false); // Fecha o menu ao sair
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }
   };
+
+  // 2. EFEITO para fechar o menu se o utilizador clicar fora dele
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    // Adiciona o listener quando o menu está aberto
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    // Remove o listener quando o componente é desmontado ou o menu fecha
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
 
   return (
     <header className={styles.siteHeader}>
@@ -29,29 +50,38 @@ function Header() {
           </Link>
         </div>
 
-        {/* Adicionei uma div 'menu' para alinhar com a estrutura do seu CSS original */}
         <div className={styles.menu}>
           <nav className={styles.mainNav}>
             <NavLink to="/fichas/nova">Criar Ficha</NavLink>
             <NavLink to="/fichas">Minhas Fichas</NavLink>
             <NavLink to="/campanhas">Campanhas</NavLink>
             <NavLink to="/embreve">Em breve...</NavLink>
-          
           </nav>
         </div>
         
-        <div className={styles.perfilUsuario}>
+        <div className={styles.perfilUsuario} ref={menuRef}>
           {isAuthenticated && user ? (
-            // Usaremos um botão com a imagem de fundo, como no seu CSS
-            <button
-              onClick={handleLogout}
-              className={styles.profileButton}
-              style={{ backgroundImage: `url(${user.foto_perfil_url || '/images/default-avatar.jpg'})` }}
-              title="Sair"
-            ></button>
+            <>
+              <button
+                // 3. O clique no botão agora abre/fecha o menu
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={styles.profileButton}
+                style={{ backgroundImage: `url(${user.foto_perfil_url || '/images/default-avatar.jpg'})` }}
+                title="Menu do Utilizador"
+              ></button>
+
+              {/* 4. O MENU DROPDOWN (só aparece se isMenuOpen for true) */}
+              {isMenuOpen && (
+                <div className={styles.dropdownMenu}>
+                  <ul>
+                    <li><Link to="/configuracoes" onClick={() => setIsMenuOpen(false)}>Configurações</Link></li>
+                    <li><button onClick={handleLogout}>Sair</button></li>
+                  </ul>
+                </div>
+              )}
+            </>
           ) : (
-            // A MUDANÇA ESTÁ AQUI: aplicamos a nossa nova classe de estilo
-            <Link to="/login" className={styles.loginButton}>Entrar</Link>
+            <Link to="/auth" className={styles.loginButton}>Entrar</Link>
           )}
         </div>
       </div>
