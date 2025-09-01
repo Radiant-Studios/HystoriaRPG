@@ -480,13 +480,26 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
 .periciaCellNome {
     justify-content: flex-start;
     gap: 10px;
+    font-weight: 400;
+}
+
+.periciaCellNome:hover {
+    justify-content: flex-start;
+    gap: 10px;
     font-weight: 500;
+    color:blueviolet;
 }
 
 /* Colore o nome da perícia se ela for treinada */
 .periciaCellNome.treinada {
     color: var(--accent-primary-light);
     font-weight: bold;
+}
+
+.periciaCellNome.treinada:hover {
+    color: var(--accent-primary-light);
+    font-weight: bold;
+    color:blueviolet;
 }
 
 .totalBonus {
@@ -583,4 +596,113 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
 .periciaCell .input {
     background-color: var(--bg-primary);
     border: 1px solid var(--accent-primary);
+}
+
+/* ================================================================ */
+/* CSS PARA O MODAL DE DETALHES DA PERÍCIA                          */
+/* ================================================================ */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Garante que o modal fique na frente de tudo */
+    animation: fadeIn 0.3s ease; /* Efeito de fade-in */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    background-color: var(--bg-secondary);
+    padding: 25px 30px;
+    border-radius: 8px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    animation: slideUp 0.3s ease-out; /* Efeito de slide-up */
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+.modalContent h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    color: var(--accent-primary);
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.modalDescription {
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    line-height: 1.6;
+}
+
+.modalField {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.modalField span {
+    font-weight: 600;
+}
+
+.modalField strong {
+    color: var(--accent-primary);
+}
+
+.modalCloseButton {
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    margin-top: 25px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.modalCloseButton:hover {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+.modalSelect {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modalSelect:focus {
+    outline: none;
+    border-color: var(--accent-primary);
 }
