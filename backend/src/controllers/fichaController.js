@@ -64,12 +64,41 @@ const buscarFichaPorId = async (req, res) => {
     }
 };
 
-// FUNÇÃO ATUALIZADA PARA SALVAR TODOS OS DADOS INICIAIS
+const LISTA_PERICIAS_COMPLETA = {
+    "Acrobacia": { atributo_base: "destreza" }, "Adestramento": { atributo_base: "carisma" },
+    "Atletismo": { atributo_base: "forca" }, "Atuação": { atributo_base: "carisma" },
+    "Cavalgar": { atributo_base: "destreza" }, "Conhecimento": { atributo_base: "inteligencia" },
+    "Cura": { atributo_base: "sabedoria" }, "Diplomacia": { atributo_base: "carisma" },
+    "Enganação": { atributo_base: "carisma" }, "Fortitude": { atributo_base: "constituicao" },
+    "Furtividade": { atributo_base: "destreza" }, "Guerra": { atributo_base: "inteligencia" },
+    "Iniciativa": { atributo_base: "destreza" }, "Intimidação": { atributo_base: "carisma" },
+    "Intuição": { atributo_base: "sabedoria" }, "Investigação": { atributo_base: "inteligencia" },
+    "Jogatina": { atributo_base: "carisma" }, "Ladinagem": { atributo_base: "destreza" },
+    "Luta": { atributo_base: "forca" }, "Misticismo": { atributo_base: "inteligencia" },
+    "Nobreza": { atributo_base: "inteligencia" }, "Ofício": { atributo_base: "inteligencia" },
+    "Percepção": { atributo_base: "sabedoria" }, "Pilotagem": { atributo_base: "destreza" },
+    "Pontaria": { atributo_base: "destreza" }, "Reflexos": { atributo_base: "destreza" },
+    "Religião": { atributo_base: "sabedoria" }, "Sobrevivência": { atributo_base: "sabedoria" },
+    "Vontade": { atributo_base: "sabedoria" }
+};
+
+// Substitua sua função criarFicha inteira por esta
 const criarFicha = async (req, res) => {
-    const { poderes, magias, pericias, ...dadosDaFicha } = req.body;
+    const { poderes, magias, pericias: periciasTreinadas, ...dadosDaFicha } = req.body;
     const userId = req.userId;
 
     try {
+        // --- NOVA LÓGICA PARA CRIAR O OBJETO DE PERÍCIAS ---
+        const objetoPericias = {};
+        Object.keys(LISTA_PERICIAS_COMPLETA).forEach(nomePericia => {
+            objetoPericias[nomePericia] = {
+                treinada: periciasTreinadas.includes(nomePericia),
+                outros_bonus: 0,
+                atributo_base: LISTA_PERICIAS_COMPLETA[nomePericia].atributo_base
+            };
+        });
+        // --- FIM DA NOVA LÓGICA ---
+
         const { data: novaFicha, error: fichaError } = await supabase
             .from('fichas')
             .insert({
@@ -77,7 +106,6 @@ const criarFicha = async (req, res) => {
                 nome: dadosDaFicha.nomePersonagem,
                 historia: dadosDaFicha.historia,
                 raca: dadosDaFicha.raca,
-                // A classe agora é salva com o objeto inteiro dentro de 'nome'
                 classes: [{ nome: dadosDaFicha.classe, nivel: 1 }], 
                 origem: dadosDaFicha.origem,
                 nivel: 1,
@@ -86,7 +114,7 @@ const criarFicha = async (req, res) => {
                 pontos_de_vida_atual: dadosDaFicha.pv,
                 pontos_de_mana_max: dadosDaFicha.pm,
                 pontos_de_mana_atual: dadosDaFicha.pm,
-                pericias: pericias // SALVANDO AS PERÍCIAS
+                pericias: objetoPericias // Salva o novo objeto JSONB
             })
             .select()
             .single();
@@ -96,19 +124,13 @@ const criarFicha = async (req, res) => {
         const fichaId = novaFicha.id;
 
         if (poderes && poderes.length > 0) {
-            const poderesParaInserir = poderes.map(poder => ({
-                ficha_id: fichaId,
-                poder_id: poder.id
-            }));
+            const poderesParaInserir = poderes.map(poder => ({ ficha_id: fichaId, poder_id: poder.id }));
             const { error: poderesError } = await supabase.from('fichas_poderes').insert(poderesParaInserir);
             if (poderesError) throw poderesError;
         }
         
         if (magias && magias.length > 0) {
-            const magiasParaInserir = magias.map(magia => ({
-                ficha_id: fichaId,
-                magia_id: magia.id
-            }));
+            const magiasParaInserir = magias.map(magia => ({ ficha_id: fichaId, magia_id: magia.id }));
             const { error: magiasError } = await supabase.from('fichas_magias').insert(magiasParaInserir);
             if (magiasError) throw magiasError;
         }

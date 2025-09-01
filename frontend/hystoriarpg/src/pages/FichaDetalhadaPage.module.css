@@ -43,9 +43,9 @@
 }
 
 .charName {
-    font-family: 'Cinzel', serif;
-    font-size: 2.8rem;
     margin: 0;
+    display: block;
+    width: 100%;
 }
 
 .charSubtitle {
@@ -72,7 +72,6 @@
 }
 
 .statBox strong {
-    font-size: 2rem;
     font-weight: 700;
     color: var(--accent-primary);
 }
@@ -91,26 +90,28 @@
     margin: 0 0 15px 0;
 }
 
-.attribute {
-    /* Remover o padding para que a imagem preencha todo o espaço */
-    /* padding: 10px 20px; */ 
-    text-align: center;
-    width: 105px; /* Largura fixa para os cards */
-    height: 100px; /* Altura fixa para os cards */
-    background-size: cover; 
-    background-position: center; 
-    background-repeat: no-repeat; 
-    color: var(--text-light); 
-    position: relative; 
-    overflow: hidden; 
-
-    /* Centralizar o conteúdo (EditableField) dentro do div */
-    display: flex;
-    align-items: center; /* Centraliza verticalmente */
-    justify-content: center; /* Centraliza horizontalmente */
+.attributesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+    justify-items: center;
+    align-items: center;
 }
 
-/* Opcional: Adicionar um overlay escuro para melhorar a legibilidade do texto */
+.attribute {
+    width: 106px;
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: var(--text-light);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .attribute::before {
     content: '';
     position: absolute;
@@ -118,47 +119,37 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 6px; 
+    border-radius: 6px;
     z-index: 0;
-    pointer-events: none; 
+    pointer-events: none;
 }
 
-/* Ajusta o estilo do EditableField para ficar centralizado e com fonte maior */
 .attribute .span {
-    position: relative; /* Garante que o span fique acima do overlay */
-    z-index: 1; /* Coloca o conteúdo acima do overlay */
-    color: white; /* Garante que o texto seja branco sobre o overlay escuro */
-    font-size: 2.2rem; /* Tamanho da fonte maior para o número */
+    position: relative;
+    z-index: 1;
+    color: white;
+    font-size: 2.2rem;
     font-weight: bold;
-    line-height: 1; /* Ajusta a altura da linha */
-    display: flex; /* Para centralizar melhor o conteúdo dentro do span */
+    line-height: 1;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%; /* Ocupa a largura total para ajudar na centralização */
-    height: 100%; /* Ocupa a altura total */
+    width: 100%;
+    height: 100%;
 }
 
-
-/* Ajusta o input dentro do atributo para ter um fundo mais transparente */
-/* E para ter o mesmo estilo de fonte e alinhamento */
 .attribute .input {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
     border-color: var(--accent-primary);
     color: white;
-    font-size: 2.2rem; /* Tamanho da fonte maior para o input */
+    font-size: 2.2rem;
     font-weight: bold;
     text-align: center;
-    width: 80%; /* Ajusta a largura do input para um bom encaixe */
-    height: 80%; /* Ajusta a altura do input */
+    width: 80%;
+    height: 80%;
     border-radius: 4px;
-}
-
-/* Ajuste para o grid de atributos para um espaçamento mais uniforme */
-.attributesGrid {
-    display: grid; /* Mudar para grid */
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 100px para o min-width dos cards */
-    gap: 15px;
-    justify-items: center; /* Centraliza os itens no grid */
-    align-items: center; /* Centraliza os itens verticalmente no grid */
 }
 
 .list {
@@ -169,7 +160,7 @@
 .historyText {
     color: var(--text-secondary);
     line-height: 1.7;
-    white-space: pre-wrap; /* Preserva quebras de linha e espaços */
+    white-space: pre-wrap;
 }
 
 .error {
@@ -178,18 +169,20 @@
     color: #ef4444;
 }
 
-/* --- NOVAS CLASSES PARA OS CONTADORES --- */
-
 .resourceControl {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px; /* Espaçamento entre os botões e o texto */
+    gap: 15px;
 }
 
 .resourceControl strong {
-    min-width: 100px; /* Garante que o layout não "pule" quando os números mudam */
+    min-width: 120px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .resourceControl button {
@@ -222,4 +215,372 @@
     cursor: not-allowed;
     background-color: var(--bg-primary);
     color: var(--text-secondary);
+}
+
+.resourceControl .span, .resourceControl .input {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    background: transparent;
+    border: none;
+    padding: 0;
+    max-width: 60px;
+}
+
+.resourceControl .input {
+    border-bottom: 2px solid var(--accent-primary);
+    border-radius: 0;
+}
+
+/* Adicione estas classes ao final do seu FichaDetalhadaPage.module.css */
+
+.periciasContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Pequeno espaço entre as linhas */
+}
+
+.periciasGridHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 0 10px 10px 10px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 10px;
+}
+
+.periciasGridHeader span:nth-child(n+2) {
+    text-align: center;
+}
+
+.periciaRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.periciaRow:hover {
+    background-color: var(--bg-primary);
+}
+
+.periciaRow.treinada {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.periciaNome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diceIcon {
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.diceIcon:hover {
+    transform: scale(1.2) rotate(15deg);
+}
+
+.periciaValor, .periciaAtributo, .periciaOutros {
+    text-align: center;
+}
+
+/* Ajusta o EditableField dentro da tabela de perícias */
+.periciaOutros .span, .periciaOutros .input {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    background-color: transparent;
+    border: none;
+    width: 40px; /* Largura menor para o campo */
+    padding: 4px;
+}
+
+.periciaOutros .span:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.periciaOutros .input {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
+}
+
+/* FichaDetalhadaPage.module.css */
+
+.container {
+    width: 100%;
+    max-width: 1200px; /* Aumentamos o max-width para acomodar duas colunas */
+    margin: 0 auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    color: var(--text-primary);
+}
+
+/* ... (backLink, sheet, header, portrait, headerInfo, charName, charSubtitle, mainStats, statBox, resourceControl, buttons continuam os mesmos) ... */
+
+.sheet {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 30px 40px;
+    display: flex; /* Adiciona flexbox para as colunas */
+    gap: 30px; /* Espaçamento entre as colunas */
+}
+
+.leftColumn {
+    flex: 2; /* A coluna da esquerda ocupa 2 partes do espaço */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espaçamento entre as seções dentro da coluna esquerda */
+}
+
+.rightColumn {
+    flex: 1; /* A coluna da direita ocupa 1 parte do espaço */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espaçamento entre as seções dentro da coluna direita */
+}
+
+.section {
+    padding: 20px 0;
+    /* Remover border-bottom aqui se cada seção da coluna esquerda terá seu próprio border-bottom */
+    /* ou deixar para estilizar as divisões internas de cada coluna */
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+/* Adicione um border-bottom para as seções da coluna esquerda, se desejar */
+.leftColumn .section {
+    border-bottom: 1px solid var(--border-color);
+}
+.leftColumn .section:last-of-type { /* last-of-type para não pegar a seção de Perícias */
+    border-bottom: none;
+}
+
+/* Estilos para o cabeçalho das perícias (mantidos, mas podem precisar de ajustes finos depois) */
+.periciasGridHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Simplificamos, pois o resto estará no modal/detalhe */
+    gap: 10px;
+    padding: 0 10px 10px 10px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 10px;
+}
+
+.periciasGridHeader span:last-child {
+    text-align: center;
+}
+
+.periciasContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Pequeno espaço entre as linhas */
+}
+
+/* Remova os estilos .periciaRow, .periciaNome, .periciaValor, .periciaAtributo, 
+.periciaOutros, .diceIcon e o EditableField específico das perícias daqui. 
+Eles serão movidos para o novo componente PericiaItem e seu modal. */
+/* Se quiser, mantenha um .periciaRow básico que será o contêiner do PericiaItem */
+.periciaRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Para nome e total */
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    cursor: pointer; /* Indica que é clicável */
+}
+
+.periciaRow:hover {
+    background-color: var(--bg-primary);
+}
+
+.periciaRow.treinada {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.periciaNomeDisplay { /* Nova classe para o nome da perícia dentro da linha */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.periciaTotalDisplay { /* Nova classe para o total da perícia dentro da linha */
+    text-align: center;
+}
+
+/* Adicione esta classe para o seletor no modal */
+.modalSelect {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modalSelect:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.periciasSection {
+    padding-top: 0 !important;
+}
+
+.periciasGrid {
+    display: grid;
+    /* Define 5 colunas com proporções específicas */
+    grid-template-columns: 50px 1fr 100px 80px 80px;
+    gap: 8px 15px; /* Espaçamento vertical e horizontal */
+    align-items: center;
+}
+
+.periciaHeader {
+    font-weight: bold;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    padding-bottom: 7px;
+    border-bottom: 2px solid var(--border-color);
+    text-align: center;
+}
+
+.periciaHeader:nth-child(2) { /* Título "Perícia" */
+    text-align: left;
+}
+
+.periciaCell, .periciaCellNome, .periciaCellTreino {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+    min-height: 20px; /* Garante altura mínima para cada linha */
+}
+
+.periciaCellNome {
+    justify-content: flex-start;
+    gap: 10px;
+    font-weight: 500;
+}
+
+/* Colore o nome da perícia se ela for treinada */
+.periciaCellNome.treinada {
+    color: var(--accent-primary-light);
+    font-weight: bold;
+}
+
+.totalBonus {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--accent-primary);
+}
+
+.diceIcon {
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.diceIcon:hover {
+    transform: scale(1.2) rotate(15deg);
+}
+
+/* Estilo para a caixa de seleção de Treino */
+.periciaCellTreino input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--bg-primary);
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+}
+
+.periciaCellTreino input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--accent-primary);
+    transform-origin: bottom left;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.periciaCellTreino input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+/* Estilo para o seletor de Atributo */
+.atributoSelect {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.atributoSelect:hover {
+    border-color: var(--border-color);
+    background-color: var(--bg-primary);
+}
+
+.atributoSelect:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+/* Estilo para o EditableField dentro da tabela */
+.periciaCell .span, .periciaCell .input {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    background-color: transparent;
+    border: none;
+    width: 50px;
+    padding: 4px;
+    text-align: center;
+}
+
+.periciaCell .span:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.periciaCell .input {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
 }

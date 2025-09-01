@@ -20,6 +20,15 @@ import "swiper/css/navigation";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 
+const ATRIBUTO_IMAGENS = {
+    forca: '/images/atributos/forca.png',
+    destreza: '/images/atributos/destreza.png',
+    constituicao: '/images/atributos/constituicao.png',
+    inteligencia: '/images/atributos/inteligencia.png',
+    sabedoria: '/images/atributos/sabedoria.png',
+    carisma: '/images/atributos/carisma.png',
+};
+
 // Lista de todas as perícias de Tormenta20
 const LISTA_DE_PERICIAS = [
   "Acrobacia",
@@ -276,7 +285,7 @@ function NovaFichaPage() {
   const [sexoEscolhido, setSexoEscolhido] = useState(null);
   const [herancaEscolhida, setHerancaEscolhida] = useState(null);
   const [atributosHeranca, setAtributosHeranca] = useState([]);
-  const [todosOsPoderes, setTodosOsPoderes] = useState([]);
+  const [podePegarNegativo, setPodePegarNegativo] = useState(true);
 
   const handlePoderSelect = (poder) => {
     setPersonagem((prev) => ({
@@ -511,7 +520,7 @@ function NovaFichaPage() {
     setCurrentStep(4);
   };
 
-  const PONTO_CUSTO = { "-1": -1, 0: 0, 1: 1, 2: 2, 3: 4, 4: 7 };
+  const PONTO_CUSTO = { 0: 0, 1: 1, 2: 2, 3: 4, 4: 7, 5: 11 };
   const ATRIBUTOS_LISTA = [
     "forca",
     "destreza",
@@ -523,45 +532,57 @@ function NovaFichaPage() {
   const existeAtributoNegativo = Object.values(atributosBase).some(
     (v) => v === -1
   );
-  const pontosIniciais = existeAtributoNegativo ? 11 : 10;
+  const pontosIniciais = 10;
   const custoAtual = ATRIBUTOS_LISTA.reduce(
     (total, attr) => total + PONTO_CUSTO[atributosBase[attr]],
     0
   );
-  const pontosGastos = existeAtributoNegativo ? custoAtual + 1 : custoAtual;
+  const pontosGastos = useMemo(() => {
+    return ATRIBUTOS_LISTA.reduce((total, attr) => {
+      const valor = atributosBase[attr];
+      if (valor > 0) {
+        return total + PONTO_CUSTO[valor];
+      } else if (valor < 0) {
+        return total - 1; // Ganha 1 ponto por atributo negativo
+      }
+      return total;
+    }, 0);
+  }, [atributosBase]);
   const pontosDisponiveis = pontosIniciais - pontosGastos;
 
   const handleMudancaAtributo = (attr, delta) => {
     const valorAtual = atributosBase[attr];
-    const novoValor = valorAtual + delta;
-    if (novoValor < -1 || novoValor > 4) return;
-    if (novoValor === -1) {
-      const outroAtributoJaNegativo = Object.entries(atributosBase).some(
-        ([key, value]) => key !== attr && value === -1
-      );
-      if (outroAtributoJaNegativo) return;
-    }
-    const novosAtributos = { ...atributosBase, [attr]: novoValor };
-    const novoCustoTotal = ATRIBUTOS_LISTA.reduce(
-      (total, a) => total + PONTO_CUSTO[novosAtributos[a]],
-      0
-    );
-    if (novoCustoTotal <= 10) {
-      setAtributosBase(novosAtributos);
-    }
+    let novoValor = valorAtual + delta;
+
+    // Limites do sistema de T20 (heróico é 5, mínimo pode ser -1 pela regra de pontos)
+    if (novoValor > 5 || novoValor < -1) return;
+
+    // Regra de apenas um atributo negativo
+    if (novoValor === -1 && !podePegarNegativo && valorAtual !== -1) return;
+
+    // Atualiza o estado que controla se pode pegar um novo atributo negativo
+    if (novoValor === -1) setPodePegarNegativo(false);
+    if (valorAtual === -1 && novoValor > -1) setPodePegarNegativo(true);
+
+    const novoAtributosBase = { ...atributosBase, [attr]: novoValor };
+    setAtributosBase(novoAtributosBase);
   };
 
   const handleConfirmarAtributos = () => {
     const atributosFinais = {};
     ATRIBUTOS_LISTA.forEach((attr) => {
       const total =
-        atributosBase[attr] + (personagem.atributosRaciais[attr] || 0);
+        (atributosBase[attr] || 0) + (personagem.atributosRaciais[attr] || 0);
       atributosFinais[attr] = total;
     });
+
+    // O cálculo de PV usa o atributo CONSTITUIÇÃO, não o modificador.
+    // Como em T20 o valor é o modificador, o cálculo está correto.
     const pvBaseDaClasse = selections.classe?.habilidades?.pv_inicial || 0;
     const pvExtraRacial = selections.raca?.habilidades?.pv_extra_inicial || 0;
     const pvFinal =
-      pvBaseDaClasse + atributosFinais.constituicao + pvExtraRacial;
+      pvBaseDaClasse + (atributosFinais.constituicao || 0) + pvExtraRacial;
+
     setPersonagem((prev) => ({ ...prev, atributosFinais, pv: pvFinal }));
     setCurrentStep(5);
   };
@@ -1108,22 +1129,19 @@ function NovaFichaPage() {
               </div>
               <div className={styles.atributosContainer}>
                 {ATRIBUTOS_LISTA.map((attr) => {
-                  const bonusRacial = personagem.atributosRaciais[attr] || 0;
                   const valorBase = atributosBase[attr];
+                  const bonusRacial = personagem.atributosRaciais[attr] || 0;
                   const valorTotal = valorBase + bonusRacial;
                   const custoProximoPonto =
-                    PONTO_CUSTO[valorBase + 1] - PONTO_CUSTO[valorBase];
-                  const desabilitarDiminuir =
-                    valorBase <= -1 ||
-                    (valorBase === 0 &&
-                      existeAtributoNegativo &&
-                      atributosBase[attr] !== -1);
+                    (PONTO_CUSTO[valorBase + 1] || 99) -
+                    (PONTO_CUSTO[valorBase] || 0);
+
                   return (
                     <div
                       key={attr}
                       className={styles.atributoBox}
                       style={{
-                        backgroundImage: `url(/images/atributos/${attr}.png)`,
+                        backgroundImage: `url(${ATRIBUTO_IMAGENS[attr]})`,
                       }}
                     >
                       <div className={styles.valoresContainer}>
@@ -1136,10 +1154,11 @@ function NovaFichaPage() {
                         </div>
                         <div className={styles.valorTotal}>{valorTotal}</div>
                       </div>
+
                       <div className={styles.controlesBase}>
                         <button
                           onClick={() => handleMudancaAtributo(attr, -1)}
-                          disabled={desabilitarDiminuir}
+                          disabled={valorBase <= -1}
                         >
                           -
                         </button>
@@ -1147,7 +1166,7 @@ function NovaFichaPage() {
                         <button
                           onClick={() => handleMudancaAtributo(attr, 1)}
                           disabled={
-                            valorBase >= 4 ||
+                            valorBase >= 5 ||
                             pontosDisponiveis < custoProximoPonto
                           }
                         >
@@ -1162,11 +1181,11 @@ function NovaFichaPage() {
                 <button
                   className={styles.btnSelect}
                   onClick={handleConfirmarAtributos}
-                  disabled={pontosDisponiveis !== 0}
+                  disabled={pontosDisponiveis < 0}
                 >
-                  {pontosDisponiveis > 0
-                    ? `Faltam ${pontosDisponiveis} pontos`
-                    : "Confirmar Atributos"}
+                  {pontosDisponiveis >= 0
+                    ? "Confirmar Atributos"
+                    : `Pontos Insuficientes (${pontosDisponiveis})`}
                 </button>
               </div>
             </div>
