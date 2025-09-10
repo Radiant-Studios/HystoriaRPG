@@ -1,32 +1,48 @@
-.span {
-    cursor: pointer;
-    transition: border-color 0.2s;
-    width: 100%;
+/* ================================================================ */
+/* CSS CORRIGIDO PARA TRANSIÇÃO SUAVE                               */
+/* ================================================================ */
+
+/* Estilos COMUNS para ambos os modos (visualização e edição) */
+.span, .input {
+    /* Herda todas as propriedades de fonte do local onde o componente for usado */
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    
+    /* Garante que ambos tenham o mesmo alinhamento e tamanho */
+    line-height: 1.2;
+    text-align: center;
+    padding: 2px 4px; /* Pequeno padding interno */
+    margin: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%; /* Ocupa o espaço que o pai determinar */
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* Estilo específico para o modo de visualização */
+.span {
+    cursor: pointer;
+    border: 1px solid transparent; /* Borda invisível para ocupar o mesmo espaço da borda do input */
+    transition: background-color 0.2s;
+}
+
 .span:hover {
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
 }
 
+/* Estilo específico para o modo de edição */
 .input {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    font-size: 2.2rem;
-    font-weight: 700;
-    text-align: center;
     background-color: rgba(0, 0, 0, 0.5);
     border: 1px solid var(--accent-primary);
-    color: white;
-    border-radius: 4px;
-    box-sizing: border-box;
+    outline: none; /* Remove a borda azul do navegador ao focar */
 }
 
+/* Remove as setas de incremento/decremento do input de número */
 .input::-webkit-outer-spin-button,
 .input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -35,21 +51,4 @@
 
 .input[type=number] {
   -moz-appearance: textfield;
-}
-
-/* NOVAS CLASSES PARA O TÍTULO */
-.titleSpan, .titleInput {
-    font-family: 'Cinzel', serif;
-    font-size: 2.8rem;
-    font-weight: normal;
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
-    width: 100%;
-}
-
-.titleInput {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
-    color: var(--text-primary);
 }

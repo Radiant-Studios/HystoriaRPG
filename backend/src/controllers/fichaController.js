@@ -335,17 +335,59 @@ const atualizarClasses = async (req, res) => {
     }
 };
 
+const atualizarDefesa = async (req, res) => {
+    const { id } = req.params;
+    const { armadura, escudo, outros } = req.body;
+
+    try {
+        const { data, error } = await supabase.from('fichas')
+            .update({ 
+                defesa_armadura_bonus: armadura,
+                defesa_escudo_bonus: escudo,
+                defesa_outros_bonus: outros
+            })
+            .match({ id: id, user_id: req.userId })
+            .select();
+
+        if (error) throw error;
+        res.json({ mensagem: 'Bônus de defesa atualizados com sucesso!', ficha: data[0] });
+    } catch (err) {
+        console.error('Erro ao atualizar defesa:', err);
+        res.status(500).json({ erro: 'Erro no servidor ao atualizar a defesa.' });
+    }
+};
+
+const atualizarStatsGerais = async (req, res) => {
+    const { id } = req.params;
+    const { deslocamento, tamanho, proficiencias } = req.body;
+
+    try {
+        const { data, error } = await supabase.from('fichas')
+            .update({ deslocamento, tamanho, proficiencias })
+            .match({ id: id, user_id: req.userId })
+            .select();
+
+        if (error) throw error;
+        res.json({ mensagem: 'Stats atualizados com sucesso!', ficha: data[0] });
+    } catch (err) {
+        console.error('Erro ao atualizar stats gerais:', err);
+        res.status(500).json({ erro: 'Erro ao atualizar stats gerais.' });
+    }
+};
+
 module.exports = {
     listarFichas,
     buscarFichaPorId,
     criarFicha,
     deletarFicha,
     atualizarInfoGeral,
+    atualizarDefesa,
     atualizarAtributos,
     atualizarPericias,
     atualizarPontos,
     atualizarNivel,
     atualizarFoto,
+    atualizarStatsGerais,
     adicionarHabilidade,
     removerHabilidade,
     atualizarClasses

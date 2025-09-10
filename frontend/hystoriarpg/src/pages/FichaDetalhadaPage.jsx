@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
+import { useParams, Link } from "react-router-dom";
 import styles from "./FichaDetalhadaPage.module.css";
 import axios from "axios";
 import EditableField from "../components/EditableField";
+import { FaShieldAlt, FaShoePrints, FaUserFriends } from "react-icons/fa";
+
+// Importa react-toastify
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CustomToast from "../components/CustomToast";
 
 const LISTA_PERICIAS_COMPLETA = {
   Acrobacia: {
@@ -139,6 +145,16 @@ const ATRIBUTO_IMAGENS = {
   carisma: "/images/atributos/carisma.png",
 };
 
+const TAMANHOS_DISPONIVEIS = [
+  "Mínimo",
+  "Minúsculo",
+  "Pequeno",
+  "Médio",
+  "Grande",
+  "Enorme",
+  "Colossal",
+];
+
 function FichaDetalhadaPage() {
   const { id } = useParams();
   const [ficha, setFicha] = useState(null);
@@ -146,6 +162,8 @@ function FichaDetalhadaPage() {
   const [error, setError] = useState("");
   const [modalPericiaAberta, setModalPericiaAberta] = useState(false);
   const [periciaSelecionada, setPericiaSelecionada] = useState(null);
+  const [proficienciasTexto, setProficienciasTexto] = useState("");
+  const saveTimeoutRef = useRef(null); // useRef para guardar o timeout
 
   useEffect(() => {
     const fetchFicha = async () => {
@@ -165,6 +183,13 @@ function FichaDetalhadaPage() {
     };
     fetchFicha();
   }, [id]);
+
+  useEffect(() => {
+    if (ficha && ficha.proficiencias && Array.isArray(ficha.proficiencias)) {
+      // Converte o array do banco de dados em uma string com quebras de linha
+      setProficienciasTexto(ficha.proficiencias.join("\n"));
+    }
+  }, [ficha]);
 
   const handlePontosChange = async (tipo, valor) => {
     if (!ficha) return;
@@ -327,8 +352,36 @@ function FichaDetalhadaPage() {
   const handleRolarPericia = (nomePericia, totalBonus) => {
     const dado = Math.floor(Math.random() * 20) + 1;
     const resultadoFinal = dado + totalBonus;
-    alert(
-      `Rolagem de ${nomePericia}:\nDado: ${dado}\nBônus: ${totalBonus}\nResultado: ${resultadoFinal}`
+
+    let critStatus = "normal";
+    if (dado === 20) {
+      critStatus = "critical";
+    } else if (dado === 1) {
+      critStatus = "fumble";
+    }
+
+    // Lógica para escolher a classe do container do toast
+    let toastClassName = styles.customToast;
+    if (critStatus === "critical") {
+      toastClassName = `${styles.customToast} ${styles.critSuccessToast}`;
+    } else if (critStatus === "fumble") {
+      toastClassName = `${styles.customToast} ${styles.critFumbleToast}`;
+    }
+
+    toast(
+      <CustomToast
+        title={`Teste de ${nomePericia}`}
+        diceValue={dado}
+        bonus={totalBonus}
+        total={resultadoFinal}
+        critStatus={critStatus}
+      />,
+      {
+        className: toastClassName,
+        autoClose: 10000,
+        position: "bottom-right",
+        hideProgressBar: true,
+      }
     );
   };
 
@@ -340,6 +393,141 @@ function FichaDetalhadaPage() {
   const fecharModalPericia = () => {
     setModalPericiaAberta(false);
     setPericiaSelecionada(null);
+  };
+
+  const handleDefesaSave = async (campo, newValue) => {
+    const valorNumerico = parseInt(newValue, 10);
+    if (isNaN(valorNumerico) || !ficha) return;
+
+    const fichaAntiga = { ...ficha };
+    const novaFicha = { ...ficha };
+    novaFicha[`defesa_${campo}_bonus`] = valorNumerico;
+    setFicha(novaFicha);
+
+    try {
+      const API_URL = "http://localhost:5000";
+      const dadosParaEnviar = {
+        armadura:
+          campo === "armadura"
+            ? valorNumerico
+            : ficha.defesa_armadura_bonus || 0,
+        escudo:
+          campo === "escudo" ? valorNumerico : ficha.defesa_escudo_bonus || 0,
+        outros:
+          campo === "outros" ? valorNumerico : ficha.defesa_outros_bonus || 0,
+      };
+      await axios.post(`${API_URL}/api/fichas/${id}/defesa`, dadosParaEnviar, {
+        withCredentials: true,
+      });
+    } catch (err) {
+      console.error("Falha ao atualizar bônus de defesa:", err);
+      setFicha(fichaAntiga);
+      setError("Não foi possível salvar a alteração da defesa.");
+    }
+  };
+
+  const handleArmaduraEscudoSave = async (tipoItem, campoValor, newValue) => {
+    const valorNumerico = parseInt(newValue, 10);
+    if (isNaN(valorNumerico) || !ficha) {
+      toast.error("Valor inválido para armadura/escudo.");
+      return;
+    }
+
+    const fichaAntiga = { ...ficha };
+    const novaFicha = { ...ficha };
+
+    // Atualiza o estado localmente
+    if (tipoItem === "armadura") {
+      novaFicha[`armadura_${campoValor}`] = valorNumerico;
+    } else if (tipoItem === "escudo") {
+      novaFicha[`escudo_${campoValor}`] = valorNumerico;
+    }
+    setFicha(novaFicha);
+
+    try {
+      const API_URL = "http://localhost:5000";
+      const dadosParaEnviar = {
+        tipo: tipoItem, // 'armadura' ou 'escudo'
+        campo: campoValor, // 'defesa' ou 'penalidade'
+        valor: valorNumerico,
+      };
+      await axios.post(
+        `${API_URL}/api/fichas/${id}/armadura-escudo`,
+        dadosParaEnviar,
+        { withCredentials: true }
+      );
+      // toast.success(`${tipoItem} ${campoValor} atualizado!`); // Opcional: feedback de sucesso
+    } catch (err) {
+      console.error(`Falha ao atualizar ${tipoItem} ${campoValor}:`, err);
+      setFicha(fichaAntiga); // Reverte o estado em caso de erro
+      toast.error(
+        `Não foi possível salvar a alteração de ${tipoItem} ${campoValor}.`
+      );
+    }
+  };
+
+  const handleStatSave = async (statName, newValue) => {
+    if (!ficha) return;
+    let valorFinal =
+      statName === "deslocamento" ? parseInt(newValue, 10) : newValue;
+    if (statName === "deslocamento" && isNaN(valorFinal)) return;
+
+    const fichaAntiga = { ...ficha };
+    setFicha({ ...ficha, [statName]: valorFinal });
+
+    try {
+      const API_URL = "http://localhost:5000";
+      const proficienciasArray = proficienciasTexto.split("\n"); // Pega o texto atual das proficiências
+
+      const dadosParaEnviar = {
+        deslocamento:
+          statName === "deslocamento" ? valorFinal : ficha.deslocamento,
+        tamanho: statName === "tamanho" ? valorFinal : ficha.tamanho,
+        proficiencias: proficienciasArray, // Inclui as proficiências para não serem apagadas
+      };
+
+      await axios.post(
+        `${API_URL}/api/fichas/${id}/statsgerais`,
+        dadosParaEnviar,
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error(`Falha ao atualizar ${statName}:`, err);
+      setFicha(fichaAntiga);
+      setError(`Não foi possível salvar a alteração de ${statName}.`);
+    }
+  };
+
+  const handleProficienciasChange = (e) => {
+    const novoTexto = e.target.value;
+    setProficienciasTexto(novoTexto);
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const API_URL = "http://localhost:5000";
+        const proficienciasArray = novoTexto.split("\n");
+
+        const dadosParaEnviar = {
+          deslocamento: ficha.deslocamento,
+          tamanho: ficha.tamanho,
+          proficiencias: proficienciasArray,
+        };
+
+        await axios.post(
+          `${API_URL}/api/fichas/${id}/statsgerais`,
+          dadosParaEnviar,
+          { withCredentials: true }
+        );
+        toast.success("Anotações salvas!");
+      } catch (err) {
+        console.error("Falha ao salvar proficiências:", err);
+        toast.error("Não foi possível salvar as anotações.");
+      }
+    }, 1500);
   };
 
   if (loading) {
@@ -365,6 +553,22 @@ function FichaDetalhadaPage() {
   }
 
   const defesa = 10 + (ficha.atributos?.destreza || 0);
+
+  const bonusDestreza = ficha.atributos?.destreza || 0;
+  const bonusArmadura = ficha.defesa_armadura_bonus || 0;
+  const bonusEscudo = ficha.defesa_escudo_bonus || 0;
+  const bonusOutros = ficha.defesa_outros_bonus || 0;
+  const defesaTotal =
+    10 + bonusDestreza + bonusArmadura + bonusEscudo + bonusOutros;
+
+  const vidaPercent =
+    ficha.pontos_de_vida_max > 0
+      ? (ficha.pontos_de_vida_atual / ficha.pontos_de_vida_max) * 100
+      : 0;
+  const manaPercent =
+    ficha.pontos_de_mana_max > 0
+      ? (ficha.pontos_de_mana_atual / ficha.pontos_de_mana_max) * 100
+      : 0;
 
   return (
     <div className={styles.container}>
@@ -397,75 +601,84 @@ function FichaDetalhadaPage() {
 
           <section className={styles.mainStats}>
             <div className={styles.statBox}>
-              <span>Pontos de Vida</span>
-              <div className={styles.resourceControl}>
-                <button
-                  onClick={() => handlePontosChange("pv", -1)}
-                  disabled={ficha.pontos_de_vida_atual <= 0}
-                >
-                  -
-                </button>
-                <strong>
-                  <EditableField
-                    initialValue={ficha.pontos_de_vida_atual}
-                    onSave={(newValue) =>
-                      handlePontosSave("pv", "atual", newValue)
+              <span>Vida</span>
+              <div className={styles.resourceBarContainer}>
+                <div
+                  className={`${styles.resourceBarFill} ${styles.vidaBar}`}
+                  style={{ width: `${vidaPercent}%` }}
+                ></div>
+                <div className={styles.resourceControl}>
+                  <button
+                    onClick={() => handlePontosChange("pv", -1)}
+                    disabled={ficha.pontos_de_vida_atual <= 0}
+                  >
+                    -
+                  </button>
+                  <strong>
+                    <EditableField
+                      initialValue={ficha.pontos_de_vida_atual}
+                      onSave={(newValue) =>
+                        handlePontosSave("pv", "atual", newValue)
+                      }
+                    />
+                    {" / "}
+                    <EditableField
+                      initialValue={ficha.pontos_de_vida_max}
+                      onSave={(newValue) =>
+                        handlePontosSave("pv", "max", newValue)
+                      }
+                    />
+                  </strong>
+                  <button
+                    onClick={() => handlePontosChange("pv", 1)}
+                    disabled={
+                      ficha.pontos_de_vida_atual >= ficha.pontos_de_vida_max
                     }
-                  />
-                  {" / "}
-                  <EditableField
-                    initialValue={ficha.pontos_de_vida_max}
-                    onSave={(newValue) =>
-                      handlePontosSave("pv", "max", newValue)
-                    }
-                  />
-                </strong>
-                <button
-                  onClick={() => handlePontosChange("pv", 1)}
-                  disabled={
-                    ficha.pontos_de_vida_atual >= ficha.pontos_de_vida_max
-                  }
-                >
-                  +
-                </button>
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
+
             <div className={styles.statBox}>
-              <span>Defesa</span>
-              <strong>{defesa}</strong>
-            </div>
-            <div className={styles.statBox}>
-              <span>Pontos de Mana</span>
-              <div className={styles.resourceControl}>
-                <button
-                  onClick={() => handlePontosChange("pm", -1)}
-                  disabled={ficha.pontos_de_mana_atual <= 0}
-                >
-                  -
-                </button>
-                <strong>
-                  <EditableField
-                    initialValue={ficha.pontos_de_mana_atual}
-                    onSave={(newValue) =>
-                      handlePontosSave("pm", "atual", newValue)
+              <span>Mana</span>
+              <div className={styles.resourceBarContainer}>
+                <div
+                  className={`${styles.resourceBarFill} ${styles.manaBar}`}
+                  style={{ width: `${manaPercent}%` }}
+                ></div>
+                <div className={styles.resourceControl}>
+                  <button
+                    onClick={() => handlePontosChange("pm", -1)}
+                    disabled={ficha.pontos_de_mana_atual <= 0}
+                  >
+                    -
+                  </button>
+                  <strong>
+                    <EditableField
+                      initialValue={ficha.pontos_de_mana_atual}
+                      onSave={(newValue) =>
+                        handlePontosSave("pm", "atual", newValue)
+                      }
+                    />
+                    {" / "}
+                    <EditableField
+                      initialValue={ficha.pontos_de_mana_max}
+                      onSave={(newValue) =>
+                        handlePontosSave("pm", "max", newValue)
+                      }
+                    />
+                  </strong>
+                  <button
+                    onClick={() => handlePontosChange("pm", 1)}
+                    disabled={
+                      ficha.pontos_de_mana_atual >= ficha.pontos_de_mana_max
                     }
-                  />
-                  {" / "}
-                  <EditableField
-                    initialValue={ficha.pontos_de_mana_max}
-                    onSave={(newValue) =>
-                      handlePontosSave("pm", "max", newValue)
-                    }
-                  />
-                </strong>
-                <button
-                  onClick={() => handlePontosChange("pm", 1)}
-                  disabled={
-                    ficha.pontos_de_mana_atual >= ficha.pontos_de_mana_max
-                  }
-                >
-                  +
-                </button>
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -488,6 +701,63 @@ function FichaDetalhadaPage() {
             </div>
           </section>
 
+          <section className={styles.infoBar}>
+            <div className={styles.statItem}>
+              <FaShieldAlt className={styles.statIcon} />
+              <div className={styles.statContent}>
+                <span className={styles.statValue}>{defesaTotal}</span>
+                <span className={styles.statLabel}>Defesa</span>
+              </div>
+            </div>
+            <div className={styles.statItem}>
+              <FaShoePrints className={styles.statIcon} />
+              <div className={styles.statContent}>
+                <span className={styles.statValue}>
+                  <EditableField
+                    initialValue={ficha.deslocamento || 9}
+                    onSave={(val) => handleStatSave("deslocamento", val)}
+                  />
+                  <small>m</small>
+                </span>
+                <span className={styles.statLabel}>Deslocamento</span>
+              </div>
+            </div>
+            <div className={styles.statItem}>
+              <FaUserFriends className={styles.statIcon} />
+              <div className={styles.statContent}>
+                {/* --- EditableField SUBSTITUÍDO POR SELECT --- */}
+                <span className={styles.statValue}>
+                  <select
+                    className={styles.statSelect}
+                    value={ficha.tamanho || "Médio"}
+                    onChange={(e) => handleStatSave("tamanho", e.target.value)}
+                  >
+                    {TAMANHOS_DISPONIVEIS.map((tamanho) => (
+                      <option key={tamanho} value={tamanho}>
+                        {tamanho}
+                      </option>
+                    ))}
+                  </select>
+                </span>
+                <span className={styles.statLabel}>Tamanho</span>
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              Proficiências & Características
+            </h2>
+            <textarea
+              className={styles.notesTextarea}
+              value={proficienciasTexto}
+              onChange={handleProficienciasChange}
+              placeholder="Anote suas proficiências, imunidades, resistências..."
+            />
+          </section>
+
+          {/* ... resto do seu código ... */}
+
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Poderes e Magias</h2>
             <p className={styles.list}>
@@ -499,7 +769,7 @@ function FichaDetalhadaPage() {
               <strong>Magias:</strong>{" "}
               {ficha.magias && ficha.magias.length > 0
                 ? ficha.magias.map((m) => m.nome).join(", ")
-                : "Nenhum"}
+                : "Nenhuma"}
             </p>
           </section>
 
@@ -627,6 +897,9 @@ function FichaDetalhadaPage() {
         </div>
       </div>
 
+      {/* Este é o container para todos os toasts/notificações */}
+      <ToastContainer />
+
       {modalPericiaAberta &&
         periciaSelecionada &&
         ReactDOM.createPortal(
@@ -648,8 +921,21 @@ function FichaDetalhadaPage() {
               </button>
             </div>
           </div>,
-          document.getElementById("modal-root") // O destino do "teletransporte"
+          document.getElementById("modal-root")
         )}
+      <div className={styles.container}>
+        {/* --- 4. ADICIONAR O TOASTCONTAINER --- */}
+        <ToastContainer theme="dark" />
+
+        {modalPericiaAberta &&
+          periciaSelecionada &&
+          ReactDOM.createPortal(
+            <div className={styles.modalOverlay} onClick={fecharModalPericia}>
+              {/* ... (conteúdo do modal de perícia) ... */}
+            </div>,
+            document.getElementById("modal-root")
+          )}
+      </div>
     </div>
   );
 }

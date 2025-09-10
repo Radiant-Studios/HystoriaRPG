@@ -1,0 +1,88 @@
+/* ================================================================ */
+/* NOVO ESTILO PARA O CONTEÚDO DO TOAST CUSTOMIZADO                */
+/* ================================================================ */
+
+.toastContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* Espaçamento menor entre os elementos */
+    padding: 0; /* Remove padding extra, o container já tem */
+}
+
+.title {
+    font-family: 'Cinzel', serif; /* Mantendo a fonte de título, se for seu padrão */
+    font-weight: 700; /* Mais negrito */
+    font-size: 1.1rem; /* Um pouco maior para destaque */
+    color: var(--accent-primary); /* Cor principal do seu tema */
+    margin-bottom: 5px; /* Mais espaço abaixo do título */
+}
+
+.rollDetails {
+    font-size: 0.95rem; /* Um pouco maior e mais legível */
+    color: var(--text-secondary); /* Cor secundária para o texto */
+    display: flex; /* Para alinhar os itens em linha */
+    align-items: center;
+    gap: 5px; /* Espaçamento entre os elementos de detalhe */
+}
+
+.rollDetails strong {
+    color: var(--text-primary); /* O valor final ou importante em destaque */
+    font-weight: 800; /* Bem negrito */
+}
+
+/* Para o icon de dado, se houver um no futuro */
+.rollIcon {
+    margin-right: 5px;
+    color: var(--accent-primary);
+}
+
+.toastContent {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.rollDetails {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.rollDetails strong {
+    color: var(--accent-primary); /* Roxo para resultados normais */
+    font-weight: 700;
+}
+
+/* --- NOVOS ESTILOS PARA O ACERTO CRÍTICO --- */
+
+.criticalTitle {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fde047; /* Dourado */
+    text-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
+}
+
+.criticalResult {
+    color: #fde047; /* Dourado */
+}
+
+.fumbleResult {
+    color: #f87171; /* Vermelho para falha crítica */
+    text-shadow: 0 0 5px rgba(248, 113, 113, 0.5);
+}
+
+/* Adicione esta classe ao final do arquivo */
+
+.fumbleTitle {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #f87171; /* Vermelho */
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+}

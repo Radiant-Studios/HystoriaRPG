@@ -204,3 +204,41 @@
     transform: translateY(0);
   }
 }
+
+.customToast.Toastify__toast {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    border: 1px solid var(--accent-primary);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Estiliza a barra de progresso que fica no fundo */
+.customToast .Toastify__progress-bar {
+    background: var(--accent-primary);
+    height: 3px;
+}
+
+/* Estiliza o botão de fechar (o 'x') */
+.customToast .Toastify__close-button {
+    color: var(--text-secondary);
+    opacity: 0.7;
+    transition: color 0.2s ease;
+}
+
+.customToast .Toastify__close-button:hover {
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+/* Estiliza o corpo da mensagem dentro do toast */
+.customToast .Toastify__toast-body {
+    font-size: 0.95rem;
+}
+
+/* Estiliza o ícone, se você usar um (ex: toast.success) */
+.customToast .Toastify__toast-icon {
+    color: var(--accent-primary);
+}

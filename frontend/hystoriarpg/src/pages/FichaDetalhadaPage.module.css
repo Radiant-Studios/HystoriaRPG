@@ -1,6 +1,6 @@
 .container {
     width: 100%;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
     box-sizing: border-box;
@@ -20,6 +20,22 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 30px 40px;
+    display: flex;
+    gap: 30px;
+}
+
+.leftColumn {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rightColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .header {
@@ -56,11 +72,18 @@
 
 .mainStats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
     text-align: center;
     padding: 20px 0;
     border-bottom: 1px solid var(--border-color);
+}
+
+.statBox {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .statBox span {
@@ -68,12 +91,114 @@
     font-size: 0.9rem;
     color: var(--text-secondary);
     text-transform: uppercase;
-    margin-bottom: 5px;
+    font-weight: 600;
 }
 
 .statBox strong {
+    font-size: 2rem;
     font-weight: 700;
     color: var(--accent-primary);
+}
+
+.resourceBarContainer {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: #1a1a1a;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    background-size: 20px 20px;
+    border-radius: 20px;
+    border: 1px solid #000;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.resourceBarFill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.5s ease-out;
+    z-index: 1;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.resourceBarFill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), transparent);
+    border-radius: 20px 20px 0 0;
+}
+
+.vidaBar {
+    background-color: #c53030;
+}
+
+.manaBar {
+    background-color: #2b6cb0;
+}
+
+.resourceControl {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.resourceControl strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 4px black, 0 0 2px black;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.resourceControl .span, .resourceControl .input {
+    font-size: 1.5rem;
+    color: #fff;
+    text-shadow: 0 1px 4px black, 0 0 2px black;
+}
+
+.resourceControl button {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 3px;
+    text-shadow: none;
+}
+
+.resourceControl button:hover {
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+}
+
+.resourceControl button:disabled {
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
 }
 
 .section {
@@ -84,10 +209,133 @@
     border-bottom: none;
 }
 
+.leftColumn .section:last-of-type {
+    border-bottom: none;
+}
+
 .sectionTitle {
     font-family: 'Cinzel', serif;
     font-size: 1.5rem;
     margin: 0 0 15px 0;
+}
+
+/* ================================================================ */
+/* CSS ATUALIZADO PARA A SEÇÃO DE DEFESA                            */
+/* ================================================================ */
+
+.defesaSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.defesaTotal {
+    text-align: center;
+}
+
+.defesaTotal span {
+    display: block;
+    font-size: 1rem; /* Um pouco maior */
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.defesaTotal strong {
+    font-size: 3.8rem; /* Um pouco maior */
+    font-weight: 700;
+    color: var(--accent-primary);
+    line-height: 1.1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Sombra para destaque */
+}
+
+.defesaBreakdown {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+    align-items: center;
+    justify-content: center;
+    gap: 10px 15px; /* Espaço entre itens e entre linhas */
+    background-color: var(--bg-primary);
+    padding: 15px 20px; /* Mais padding */
+    border-radius: 8px; /* Bordas mais suaves */
+    width: 100%;
+    max-width: 500px; /* Limita a largura para não ficar muito esticado */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3); /* Sombra interna sutil */
+}
+
+.defesaBreakdown span {
+    font-weight: 600;
+    font-size: 1.2rem; /* Levemente maior */
+    color: var(--text-primary);
+}
+
+.defesaBreakdown small {
+    font-size: 0.8rem; /* Levemente maior */
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-left: 5px; /* Espaço entre valor e label */
+}
+
+.defesaBreakdown .operator {
+    color: var(--text-secondary);
+    font-size: 1.4rem; /* Operadores maiores */
+    font-weight: bold;
+}
+
+.breakdownField {
+    display: flex;
+    align-items: center;
+    white-space: nowrap; /* Impede quebrar linha entre EditableField e small */
+}
+
+/* --- ESTILOS ESPECÍFICOS PARA O EditableField NA DEFESA --- */
+.defesaBreakdown .EditableField_span,
+.defesaBreakdown .EditableField_input {
+    width: 35px; /* Define uma largura FIXA para o campo */
+    max-width: 35px; /* Garante que ele não se expanda além disso */
+    min-width: 35px; /* E também não encolha demais */
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 2px 0;
+    border-bottom: 2px dashed transparent;
+    transition: border-color 0.2s ease, background-color 0.2s ease; /* Adicionado transição para background */
+    box-sizing: border-box; /* Garante que padding e border não adicionem largura */
+}
+
+.defesaBreakdown .EditableField_span:hover {
+    border-bottom-color: var(--text-secondary);
+    background-color: rgba(255, 255, 255, 0.05); /* Pequeno destaque ao passar o mouse */
+    border-radius: 4px; /* Leve arredondamento ao hover */
+}
+
+.defesaBreakdown .EditableField_input {
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo mais escuro e sólido ao editar */
+    border: 1px solid var(--accent-primary); /* Borda ao editar */
+    border-radius: 4px;
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4); /* Sombra interna para profundidade */
+}
+
+/* --- RESPONSIVIDADE PARA TELAS MENORES --- */
+@media (max-width: 600px) {
+    .defesaBreakdown {
+        padding: 10px 15px;
+        gap: 8px 10px;
+        font-size: 0.9em;
+    }
+    .defesaBreakdown span {
+        font-size: 1.1rem;
+    }
+    .defesaBreakdown small {
+        font-size: 0.75rem;
+    }
 }
 
 .attributesGrid {
@@ -99,7 +347,7 @@
 }
 
 .attribute {
-    width: 106px;
+    width: 100px;
     height: 100px;
     background-size: cover;
     background-position: center;
@@ -107,6 +355,7 @@
     color: var(--text-light);
     position: relative;
     overflow: hidden;
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,7 +368,6 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 6px;
     z-index: 0;
     pointer-events: none;
 }
@@ -169,289 +417,14 @@
     color: #ef4444;
 }
 
-.resourceControl {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-.resourceControl strong {
-    min-width: 120px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-}
-
-.resourceControl button {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.resourceControl button:hover {
-    background-color: var(--accent-primary);
-    color: var(--bg-primary);
-}
-
-.resourceControl button:active {
-    transform: scale(0.9);
-}
-
-.resourceControl button:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    background-color: var(--bg-primary);
-    color: var(--text-secondary);
-}
-
-.resourceControl .span, .resourceControl .input {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--accent-primary);
-    background: transparent;
-    border: none;
-    padding: 0;
-    max-width: 60px;
-}
-
-.resourceControl .input {
-    border-bottom: 2px solid var(--accent-primary);
-    border-radius: 0;
-}
-
-/* Adicione estas classes ao final do seu FichaDetalhadaPage.module.css */
-
-.periciasContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 4px; /* Pequeno espaço entre as linhas */
-}
-
-.periciasGridHeader {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-    gap: 10px;
-    padding: 0 10px 10px 10px;
-    font-weight: bold;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 10px;
-}
-
-.periciasGridHeader span:nth-child(n+2) {
-    text-align: center;
-}
-
-.periciaRow {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-    gap: 10px;
-    align-items: center;
-    padding: 8px 10px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.periciaRow:hover {
-    background-color: var(--bg-primary);
-}
-
-.periciaRow.treinada {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.periciaNome {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.diceIcon {
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: transform 0.2s;
-}
-
-.diceIcon:hover {
-    transform: scale(1.2) rotate(15deg);
-}
-
-.periciaValor, .periciaAtributo, .periciaOutros {
-    text-align: center;
-}
-
-/* Ajusta o EditableField dentro da tabela de perícias */
-.periciaOutros .span, .periciaOutros .input {
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--text-primary);
-    background-color: transparent;
-    border: none;
-    width: 40px; /* Largura menor para o campo */
-    padding: 4px;
-}
-
-.periciaOutros .span:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.periciaOutros .input {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
-}
-
-/* FichaDetalhadaPage.module.css */
-
-.container {
-    width: 100%;
-    max-width: 1200px; /* Aumentamos o max-width para acomodar duas colunas */
-    margin: 0 auto;
-    padding: 40px 20px;
-    box-sizing: border-box;
-    color: var(--text-primary);
-}
-
-/* ... (backLink, sheet, header, portrait, headerInfo, charName, charSubtitle, mainStats, statBox, resourceControl, buttons continuam os mesmos) ... */
-
-.sheet {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 30px 40px;
-    display: flex; /* Adiciona flexbox para as colunas */
-    gap: 30px; /* Espaçamento entre as colunas */
-}
-
-.leftColumn {
-    flex: 2; /* A coluna da esquerda ocupa 2 partes do espaço */
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Espaçamento entre as seções dentro da coluna esquerda */
-}
-
-.rightColumn {
-    flex: 1; /* A coluna da direita ocupa 1 parte do espaço */
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Espaçamento entre as seções dentro da coluna direita */
-}
-
-.section {
-    padding: 20px 0;
-    /* Remover border-bottom aqui se cada seção da coluna esquerda terá seu próprio border-bottom */
-    /* ou deixar para estilizar as divisões internas de cada coluna */
-}
-
-.section:last-child {
-    border-bottom: none;
-}
-
-/* Adicione um border-bottom para as seções da coluna esquerda, se desejar */
-.leftColumn .section {
-    border-bottom: 1px solid var(--border-color);
-}
-.leftColumn .section:last-of-type { /* last-of-type para não pegar a seção de Perícias */
-    border-bottom: none;
-}
-
-/* Estilos para o cabeçalho das perícias (mantidos, mas podem precisar de ajustes finos depois) */
-.periciasGridHeader {
-    display: grid;
-    grid-template-columns: 2fr 1fr; /* Simplificamos, pois o resto estará no modal/detalhe */
-    gap: 10px;
-    padding: 0 10px 10px 10px;
-    font-weight: bold;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 10px;
-}
-
-.periciasGridHeader span:last-child {
-    text-align: center;
-}
-
-.periciasContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 4px; /* Pequeno espaço entre as linhas */
-}
-
-/* Remova os estilos .periciaRow, .periciaNome, .periciaValor, .periciaAtributo, 
-.periciaOutros, .diceIcon e o EditableField específico das perícias daqui. 
-Eles serão movidos para o novo componente PericiaItem e seu modal. */
-/* Se quiser, mantenha um .periciaRow básico que será o contêiner do PericiaItem */
-.periciaRow {
-    display: grid;
-    grid-template-columns: 2fr 1fr; /* Para nome e total */
-    gap: 10px;
-    align-items: center;
-    padding: 8px 10px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-    cursor: pointer; /* Indica que é clicável */
-}
-
-.periciaRow:hover {
-    background-color: var(--bg-primary);
-}
-
-.periciaRow.treinada {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.periciaNomeDisplay { /* Nova classe para o nome da perícia dentro da linha */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.periciaTotalDisplay { /* Nova classe para o total da perícia dentro da linha */
-    text-align: center;
-}
-
-/* Adicione esta classe para o seletor no modal */
-.modalSelect {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.modalSelect:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-}
-
 .periciasSection {
     padding-top: 0 !important;
 }
 
 .periciasGrid {
     display: grid;
-    /* Define 5 colunas com proporções específicas */
     grid-template-columns: 50px 1fr 100px 80px 80px;
-    gap: 8px 15px; /* Espaçamento vertical e horizontal */
+    gap: 8px 15px;
     align-items: center;
 }
 
@@ -459,13 +432,13 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     font-weight: bold;
     color: var(--text-secondary);
     text-transform: uppercase;
-    font-size: 0.7rem;
-    padding-bottom: 7px;
+    font-size: 0.8rem;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--border-color);
     text-align: center;
 }
 
-.periciaHeader:nth-child(2) { /* Título "Perícia" */
+.periciaHeader:nth-child(2) {
     text-align: left;
 }
 
@@ -473,33 +446,29 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 0;
-    min-height: 20px; /* Garante altura mínima para cada linha */
+    min-height: 40px;
 }
 
 .periciaCellNome {
     justify-content: flex-start;
     gap: 10px;
     font-weight: 400;
+    cursor: pointer;
 }
 
 .periciaCellNome:hover {
-    justify-content: flex-start;
-    gap: 10px;
-    font-weight: 500;
-    color:blueviolet;
+    color: var(--accent-primary);
 }
 
-/* Colore o nome da perícia se ela for treinada */
+
 .periciaCellNome.treinada {
-    color: var(--accent-primary-light);
+    color: var(--text-primary);
     font-weight: bold;
 }
 
 .periciaCellNome.treinada:hover {
-    color: var(--accent-primary-light);
+    color: var(--accent-primary);
     font-weight: bold;
-    color:blueviolet;
 }
 
 .totalBonus {
@@ -518,7 +487,6 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     transform: scale(1.2) rotate(15deg);
 }
 
-/* Estilo para a caixa de seleção de Treino */
 .periciaCellTreino input[type="checkbox"] {
     -webkit-appearance: none;
     appearance: none;
@@ -551,7 +519,6 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     transform: scale(1);
 }
 
-/* Estilo para o seletor de Atributo */
 .atributoSelect {
     background-color: transparent;
     border: 1px solid transparent;
@@ -577,7 +544,6 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     border-color: var(--accent-primary);
 }
 
-/* Estilo para o EditableField dentro da tabela */
 .periciaCell .span, .periciaCell .input {
     font-size: 1rem;
     font-weight: bold;
@@ -598,22 +564,17 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     border: 1px solid var(--accent-primary);
 }
 
-/* ================================================================ */
-/* CSS PARA O MODAL DE DETALHES DA PERÍCIA                          */
-/* ================================================================ */
-
 .modalOverlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000; /* Garante que o modal fique na frente de tudo */
-    animation: fadeIn 0.3s ease; /* Efeito de fade-in */
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -629,7 +590,7 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     width: 90%;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
-    animation: slideUp 0.3s ease-out; /* Efeito de slide-up */
+    animation: slideUp 0.3s ease-out;
 }
 
 @keyframes slideUp {
@@ -706,3 +667,365 @@ Eles serão movidos para o novo componente PericiaItem e seu modal. */
     outline: none;
     border-color: var(--accent-primary);
 }
+
+.critSuccessToast {
+    background: radial-gradient(ellipse at center, #3a2f0c 0%, var(--bg-secondary) 70%);
+    border: 1px solid #fde047;
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.7);
+    animation: pulseGlow 10s ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+  }
+}
+
+.critFumbleToast {
+    background: radial-gradient(ellipse at center, #3a1a1a 0%, var(--bg-secondary) 70%);
+    border: 1px solid #f87171;
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+    animation: pulseGlowRed 10s ease-in-out;
+}
+
+@keyframes pulseGlowRed {
+  0% {
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(248, 113, 113, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+  }
+}
+
+.mainStats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.statBox {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.statBox span {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.resourceBarContainer {
+    position: relative;
+    width: 100%;
+    height: 38px; /* Altura um pouco menor */
+    background: linear-gradient(to bottom, #2a2a2a, #1e1e1e); /* Gradiente escuro para o fundo */
+    border-radius: 4px; /* Bordas levemente arredondadas */
+    border: 1px solid #111;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6); /* Sombra interna forte para profundidade */
+    overflow: hidden;
+}
+
+.resourceBarFill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease-out;
+    z-index: 1;
+    box-shadow: 
+        inset 0 -2px 3px rgba(0, 0, 0, 0.4),
+}
+
+.vidaBar {
+    background: #b91c1c; /* Gradiente de Vermelho Escuro para Claro */
+}
+
+.manaBar {
+    background: #1a45b9 /* Gradiente de Azul Escuro para Claro */
+}
+
+.resourceControl {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+.resourceControl strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    /* Sombra projetada para o texto flutuar sobre a barra */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    flex-grow: 1;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.resourceControl .span, .resourceControl .input {
+    font-size: 1.5rem;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* --- NOVO DESIGN PARA OS BOTÕES --- */
+.resourceControl button {
+    color: #eee;
+    width: 28px;
+    height: 28px; 
+    border-radius: 4px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.resourceControl button:hover {
+    color: white;
+}
+
+.resourceControl button:active {
+    /* Efeito de botão pressionado */
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.5);
+    transform: translateY(1px);
+}
+
+.resourceControl button:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
+}
+
+/* Encontre e substitua estas classes no FichaDetalhadaPage.module.css */
+
+/* --- AJUSTE NOS ATRIBUTOS --- */
+.attribute .span,
+.attribute .input {
+    /* As propriedades de fonte agora são herdadas, não precisamos mais delas aqui */
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+/* --- AJUSTE NOS PONTOS DE VIDA/MANA --- */
+.resourceControl .span, .resourceControl .input {
+    /* Apenas definimos a cor e a sombra, o resto é herdado */
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    max-width: 65px; /* Aumenta um pouco o espaço para números maiores */
+}
+
+/* --- AJUSTE NA DEFESA --- */
+.defesaBreakdown .EditableField_span,
+.defesaBreakdown .EditableField_input {
+    /* Apenas definimos a cor e a largura fixa */
+    width: 40px;
+    min-width: 40px;
+    color: var(--accent-primary);
+    font-weight: bold; /* Mantém o negrito aqui */
+}
+
+/* ... (estilos de .container, .backLink, .sheet, .leftColumn, .rightColumn, .header, etc.) */
+
+.mainStats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* ... (estilos de .statBox, .resourceBar, etc.) */
+
+/* --- NOVOS ESTILOS PARA A BARRA DE INFORMAÇÕES --- */
+.infoBar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin: 20px 0;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+.statIcon {
+    font-size: 2.5rem;
+    color: var(--accent-primary);
+    opacity: 0.8;
+}
+
+.statContent {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.statValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    display: flex;
+    align-items: baseline; /* Alinha 'm' com a base do número */
+}
+
+.statValue small {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-left: 3px;
+}
+
+.statLabel {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Ajusta o EditableField dentro da infoBar */
+.infoBar .EditableField_span,
+.infoBar .EditableField_input {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-bottom: 2px dashed transparent;
+    transition: border-color 0.2s;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    max-width: 100px;
+}
+.infoBar .EditableField_span:hover {
+    border-bottom-color: var(--accent-primary);
+}
+.infoBar .EditableField_input {
+    border-bottom-color: var(--accent-primary);
+}
+
+/* ================================================================ */
+/* CSS PARA O ALINHAMENTO DO MENU DE SELEÇÃO              */
+/* ================================================================ */
+
+/* Garante que o statValue tenha altura e alinhamento consistentes */
+.statValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    height: 32px; /* Altura fixa para alinhar todos os valores */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+}
+
+
+.statSelect {
+    background: transparent;
+    border: none;
+    font-size: inherit; /* Herda o tamanho da fonte do pai (.statValue) */
+    font-weight: inherit; /* Herda o peso da fonte */
+    color: inherit; /* Herda a cor */
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 0 25px 0 5px; /* Espaço para a seta */
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    height: 100%; /* Ocupa a altura do container .statValue */
+}
+
+/* A seta customizada agora se posiciona relativa ao .statItem */
+.statItem:has(.statSelect)::after {
+    content: '▼';
+    position: absolute;
+    /* Posicionamento mais preciso */
+    top: 22px; 
+    right: 25px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+
+.statSelect:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.statSelect option {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.notesTextarea {
+    width: 94%;
+    min-height: 120px; /* Altura mínima do bloco */
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    color: var(--text-secondary);
+    font-family: inherit; /* Usa a mesma fonte do resto da página */
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: vertical; /* Permite que o usuário redimensione verticalmente */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.notesTextarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.notesTextarea::placeholder {
+    color: #555;
+    font-style: italic;
+}
+
