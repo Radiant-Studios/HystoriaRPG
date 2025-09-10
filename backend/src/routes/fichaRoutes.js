@@ -60,6 +60,7 @@ router.post('/:id/armadura-escudo', async (req, res) => {
 // --- Rotas para Habilidades e Classes (JSON arrays) ---
 router.post('/:id/habilidades', fichaController.adicionarHabilidade);
 router.post('/:id/defesa', fichaController.atualizarDefesa);
+router.get('/:id/statsgerais', fichaController.buscarStatsGerais);
 router.post('/:id/statsgerais', fichaController.atualizarStatsGerais);
 router.delete('/:id/habilidades', fichaController.removerHabilidade);
 router.post('/:id/classes', fichaController.atualizarClasses);
