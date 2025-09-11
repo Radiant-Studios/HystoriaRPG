@@ -54,6 +54,9 @@ function Footer() {
       <p className={styles.disclaimer}>
           Tormenta 20 RPG é um produto da Jambô Editora e seus respectivos criadores, todos os direitos reservados.
         </p>
+        <p className={styles.disclaimer}>
+          Este site é conteúdo de fã não oficial e segue as diretrizes de conteúdo permitido. Não aprovado ou endossado por terceiros.
+        </p>
       </div>
     </footer>
   );
